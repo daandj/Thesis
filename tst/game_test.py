@@ -1,0 +1,24 @@
+import pytest
+
+from game import Game
+from player import RandomPlayer
+
+@pytest.fixture
+def random_players_game() -> Game:
+    [player1, player2, player3, player4] = [RandomPlayer(i) for i in range(0,4)]
+
+    game = Game(player1, player2, player3, player4)
+    return game
+
+# Deal out random cards and check that every player has received enough
+# and different cards
+def test_deal(random_players_game: Game):
+    random_players_game.deal()
+
+    all_cards = []
+
+    for player in random_players_game.players:
+        all_cards.append(player.get_hand())
+        assert len(player.get_hand()) == 8
+
+    assert not any(all_cards.count(x) > 1 for x in all_cards)
