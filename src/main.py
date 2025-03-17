@@ -20,8 +20,5 @@ def main() -> int:
 
     return 0
 
-def test():
-    print(type(klaverjas.Suit.list()[0]))
-
 if __name__ == '__main__':
-    sys.exit(test())
+    sys.exit(main())

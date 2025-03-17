@@ -1,6 +1,6 @@
 from __future__ import annotations
 import collections
-from collections.abc import Collection, Iterable, Sequence, Sized
+from collections.abc import Collection, Iterable
 import copy
 from functools import reduce
 from math import log, sqrt
@@ -226,7 +226,7 @@ class ISMCTSBaseNode: # Also used as root node, because is doesn't need most fie
     def print(self) -> None:
         print(f"\tISMCTSNode {self} with values:")
         print(f"\tn={self.n}, n'={self.n_accent}, r={self.r}, ")
-        print(f"\twith {len(self._children)}, with the actions:")
+        print(f"\twith {len(self._children)} children, with the actions:")
         print("\t\t", ', '.join(map(lambda c: str(c.prev_move),self._children)))
 
     def children(self, d: Determinization) -> Iterable[ISMCTSNode]:
@@ -260,7 +260,7 @@ class ISMCTSNode(ISMCTSBaseNode):
     def print(self) -> None:
         super().print()
         print(f"\tFurthermore, it has the parent {self.parent} ",
-              "and previous_move={self.prev_move}.")
+              f"and previous_move={self.prev_move}.")
 
 
 class TrumpNode(ISMCTSBaseNode):
@@ -289,19 +289,28 @@ class ISMCTS:
             pick_trump: bool = False) -> Card | Suit:
         root = cls.make_root(pick_trump)
 
-        for _ in range(iter):
+        for i in range(iter):
+            print(f"iter = {i}")
             d0: Determinization = cls.determinize(reader, 
                                                   trick, 
                                                   starting_player, 
                                                   information_set)
             
             v, d = cls.select(root, d0)
+            print(f'past select, v=')
+            v.print()
 
             if len(v.missing_moves(d)) > 0:
                 v, d = cls.expand(v, d)
 
+            print(f'past expand, v=')
+            v.print()
             res = cls.simulate(v, d)
+            print(f'past simulate, v=')
+            v.print()
             cls.backpropagate(v,d,res)
+            print(f'past backpropagate, v=')
+            v.print()
         
         best_child = max(root.all_children(), key=lambda child: child.n)
         return best_child.prev_move
@@ -420,6 +429,7 @@ class ISMCTS:
             # siblings according to Cowling et al. (2012).
             # TODO: Check that that makes a difference
             for child in v.children(d):
+                print(f"Updating n' in {child} in backpropagate")
                 child.n_accent += 1
             
             if type(node) == ISMCTSNode:
