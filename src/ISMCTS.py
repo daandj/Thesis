@@ -290,28 +290,19 @@ class ISMCTS:
         root = cls.make_root(pick_trump)
 
         for i in range(iter):
-            print(f"iter = {i}")
             d0: Determinization = cls.determinize(reader, 
                                                   trick, 
                                                   starting_player, 
                                                   information_set)
             
             v, d = cls.select(root, d0)
-            print(f'past select, v=')
-            v.print()
 
             if len(v.missing_moves(d)) > 0:
                 v, d = cls.expand(v, d)
 
-            print(f'past expand, v=')
-            v.print()
             res = cls.simulate(v, d)
-            print(f'past simulate, v=')
-            v.print()
             cls.backpropagate(v,d,res)
-            print(f'past backpropagate, v=')
-            v.print()
-        
+            
         best_child = max(root.all_children(), key=lambda child: child.n)
         return best_child.prev_move
     
@@ -428,8 +419,7 @@ class ISMCTS:
             # Here n' is incremented for all children, it should be 
             # siblings according to Cowling et al. (2012).
             # TODO: Check that that makes a difference
-            for child in v.children(d):
-                print(f"Updating n' in {child} in backpropagate")
+            for child in node.children(d):
                 child.n_accent += 1
             
             if type(node) == ISMCTSNode:

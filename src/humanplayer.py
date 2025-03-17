@@ -31,6 +31,9 @@ class HumanPlayer(Player):
                 continue
             
             return card
+        
+    def _get_cards(self) -> None:
+        pass
     
     def pick_trump(self, _: GameStateReader) -> Suit:
         print()
