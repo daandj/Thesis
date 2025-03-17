@@ -1,2 +1,5 @@
+# ignore cache folders
+**/__pycache__/
+
 /src/AlphaZero.py
 /src/neuralnetwork.py
