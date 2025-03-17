@@ -3,7 +3,6 @@ import copy
 from enum import IntEnum
 from functools import reduce
 from operator import add
-from typing import Self, Tuple
 import warnings
 
 class Suit(IntEnum):
@@ -14,6 +13,11 @@ class Suit(IntEnum):
 
     def __str__(self):
         return ["♣","♥","♠","♦"][self.value]
+    
+    @classmethod
+    def list(cls) -> list[Suit]:
+        return list(cls)
+
 
 class Value(IntEnum):
     SEVEN = 0
@@ -54,14 +58,14 @@ class Card:
     def __hash__(self):
         return hash((self.__suit, self.__value))
 
-    def __eq__(self, other: Card) -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, type(self)):
             return NotImplemented
         
         return (self.__suit == other.suit 
                 and self.__value == other.value)
     
-    def __ne__(self, other: Card) -> bool:
+    def __ne__(self, other: object) -> bool:
         return not self.__eq__(other)
     
     @property
@@ -93,7 +97,7 @@ class Trick:
     __cards: list[Card]
     __starting_player: int
 
-    def __init__(self, *cards: Tuple[Card]):
+    def __init__(self, *cards: Card):
         if len(cards) > 4:
             raise ValueError("A trick can't have more than four played cards.")
         
@@ -106,17 +110,20 @@ class Trick:
     def __getitem__(self, idx: int) -> Card:
         return copy.copy(self.__cards[idx])
     
-    def __eq__(self, other: Trick) -> bool:
+    def __eq__(self, other: object) -> bool:
         if not isinstance(other, type(self)):
             return NotImplemented
         
         return self.__cards == other.__cards and self.__starting_player == other.__starting_player
 
-    def __ne__(self, other: Trick) -> bool:
+    def __ne__(self, other: object) -> bool:
         return not self.__eq__(other)
     
     def __str__(self) -> str:
         return ', '.join([str(i+1) + ": " + str(card) for i, card in enumerate(self.__cards)])
+    
+    def __iter__(self):
+        return iter(self.__cards)
     
     def play(self, new_card: Card) -> None:
         if len(self.__cards) >= 4:
@@ -138,11 +145,12 @@ class Trick:
         return self.__starting_player
 
     @classmethod
-    def rotate(cls, trick: Self, times: int) -> Self:
+    def rotate(cls, trick: Trick, times: int) -> Trick:
         if len(trick) != 4:
             warnings.warn("Rotating a non-full trick may lead to"
                           " weird results...", RuntimeWarning)
-        cards = trick.__cards + [None] * (4-len(trick.__cards))
+        cards: list[Card] = trick.__cards + [None] * (4-len(trick.__cards)) # type: ignore
+        #(this list should in practice never have a None)
         #TODO: Remove the previous line
         ret = Trick(*(cards[-times:]+cards[:-times]))
         ret.__starting_player = (ret.starting_player + times) % 4
@@ -187,7 +195,7 @@ class GameState:
         highest_played = max(begin_played, key=lambda card: int(card.value))
         return trick.index(highest_played)
     
-    def score(self) -> int:
+    def score(self) -> None:
         for idx, trick in enumerate(self.tricks):
             winners = self.winner(trick) % 2
             self.points[winners] += self.__score_trick(trick)

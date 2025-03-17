@@ -16,13 +16,16 @@ class HumanPlayer(Player):
 
         self.print_hand()
         while True:
-            card = input("Kies een kaart om te spelen "
+            card_input = input("Kies een kaart om te spelen "
                           f"(0-{len(self.get_hand())-1}): ")
-            if not card.isdigit() or int(card) >= len(self.get_hand()) or int(card) < 0:
+            if (not card_input.isdigit() 
+                or int(card_input) >= len(self.get_hand()) 
+                or int(card_input) < 0):
+                
                 print("Dat is niet een geldige keuze... Probeer het opnieuw.")
                 continue
 
-            card = self.get_hand()[int(card)]
+            card: Card = self.get_hand()[int(card_input)]
             if not self.isLegal(state_reader, trick, card):
                 print("Die kaart is niet toegestaan, speel een andere.")
                 continue

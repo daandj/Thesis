@@ -5,7 +5,7 @@ from klaverjas import Card, GameStateReader, Trick, GameState, Value
 from player import Player
 
 class Game:
-    players: tuple[Player]
+    players: tuple[Player, ...]
     state: GameState
 
     # Public methods
@@ -13,14 +13,16 @@ class Game:
     def __init__(self, *players: Player):
         self.state = GameState()
         self.state_reader = GameStateReader(self.state)
-        self.players = ()
         self.set_players(players)
 
     # For pretty printing using the std library print function
     def __str__(self):
         pass
 
-    def set_players(self, players: tuple[Player]) -> None:
+    def set_players(
+            self, 
+            players: tuple[Player, ...]
+        ) -> None:
         if len(players) != 4:
             raise ValueError('A game of Klaverjas must have exactly 4 players')
         

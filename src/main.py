@@ -2,6 +2,7 @@ import sys
 from ISMCTSplayer import ISMCTSPlayer
 from game import Game
 from humanplayer import HumanPlayer
+import klaverjas
 
 def main() -> int:
     player1 = HumanPlayer(0)
@@ -19,5 +20,8 @@ def main() -> int:
 
     return 0
 
+def test():
+    print(type(klaverjas.Suit.list()[0]))
+
 if __name__ == '__main__':
-    sys.exit(main())
+    sys.exit(test())

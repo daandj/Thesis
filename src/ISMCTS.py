@@ -1,5 +1,6 @@
 from __future__ import annotations
 import collections
+from collections.abc import Collection, Iterable, Sequence, Sized
 import copy
 from functools import reduce
 from math import log, sqrt
@@ -14,7 +15,7 @@ import player
 InformationSet = NewType('InformationSet', tuple[set[Card], set[Card],
                                                  set[Card], set[Card]])
 
-def UCB1(d: Determinization, child: ISMCTSNode) -> int:
+def UCB1(d: Determinization, child: ISMCTSNode) -> float:
     k: Final[float] = 0.75 # (uit het ISMCTS paper)
     return child.reward(d)/child.n+k*sqrt(log(child.n_accent)/child.n)
 
@@ -25,7 +26,7 @@ class Determinization:
     tricks: list[Trick]
     curr_trick: Trick
     current_player: int
-    trump: Suit
+    trump: Suit | None
     hands: InformationSet
 
     def __init__(self, hands: InformationSet, current_player: int):
@@ -49,7 +50,10 @@ class Determinization:
     def finished(self) -> bool:
         return len(self.tricks) == 8
     
-    def moves(self) -> list[Card]:
+    def moves(self) -> Iterable[Card]:
+        if self.trump == None:
+            raise Exception("There is no trump assigned")
+        
         return player.Player.moves(self.trump, self.curr_trick,
                                    self.hands[self.current_player])
     
@@ -143,6 +147,9 @@ class Determinization:
         return trick.index(highest_played)
     
     def __roem_trick(self, trick: Trick) -> int:
+        if self.trump == None:
+            raise Exception("Cannot assess roem without knowing trump")
+        
         roem = 0
         # Check for drie-/vierkaart:
         first_triplet = False
@@ -187,7 +194,7 @@ class Determinization:
 
         return roem
     
-    def __score_trick(self, trick: Trick) -> tuple[int, list[int, int]]:
+    def __score_trick(self, trick: Trick) -> int:
         return reduce(add, map(lambda card: self.__score_card(card), trick))
     
     def __score_card(self, card: Card) -> int:
@@ -203,41 +210,34 @@ class Determinization:
 #
 # In this characterization, a determinization is a choice for the
 # cards in the hands of all other players.
-class ISMCTSNode:
+
+class ISMCTSBaseNode: # Also used as root node, because is doesn't need most fields
     n: int
     n_accent: int
-    parent: ISMCTSNode
     _children: set[ISMCTSNode]
     r: list[int]
-    prev_move: Card | Suit
-
-    def __init__(self, parent: ISMCTSNode = None,
-                 current_player: int = None):
+    
+    def __init__(self):
         self.n = 0                              # Visit count
         self.n_accent = 0                       # Availability count 
         self.r = [0,0]                          # Total rewards
-        self.parent = parent                    # Parent node
         self._children = set()                  # Child nodes
-        self.current_player = current_player    # The player who makes this move
-        self.prev_move = None
 
     def print(self) -> None:
         print(f"\tISMCTSNode {self} with values:")
-        print(f"\tn={self.n}, n'={self.n_accent}, r={self.r}, previous_move={self.prev_move}")
+        print(f"\tn={self.n}, n'={self.n_accent}, r={self.r}, ")
         print(f"\twith {len(self._children)}, with the actions:")
         print("\t\t", ', '.join(map(lambda c: str(c.prev_move),self._children)))
-        print(f"\tFurthermore, it has the parent {self.parent}.")
 
-    def children(self, d: Determinization) -> set[ISMCTSNode]:
+    def children(self, d: Determinization) -> Iterable[ISMCTSNode]:
         return filter(lambda child: child.prev_move in set(d.moves()), self._children)
     
     def add_child(self, move: Card | Suit) -> ISMCTSNode:
-        child: ISMCTSNode = ISMCTSNode(self)
-        child.prev_move = move
+        child: ISMCTSNode = ISMCTSNode(self, move)
         self._children.add(child)
         return child
 
-    def missing_moves(self, d: Determinization) -> set[Card | Suit]:
+    def missing_moves(self, d: Determinization) -> Collection[Card] | Collection[Suit]:
         res = set(d.moves()).difference(map(lambda child: child.prev_move, self._children))
         return res
 
@@ -248,14 +248,27 @@ class ISMCTSNode:
     def all_children(self) -> set[ISMCTSNode]:
         return self._children
 
-class TrumpNode(ISMCTSNode):
-    def __init__(self):
-        super().__init__(current_player=0)
+class ISMCTSNode(ISMCTSBaseNode):
+    parent: ISMCTSBaseNode
+    prev_move: Card | Suit
 
-    def missing_moves(self, d: Determinization) -> set[Suit]:
-        res = set(map(lambda card: card.suit,
-                      d.hands[d.current_player])
-        ).difference(map(lambda child: child.prev_move, self._children))
+    def __init__(self, parent: ISMCTSBaseNode, prev_move: Suit | Card):
+        super().__init__()
+        self.parent = parent                    # Parent node
+        self.prev_move = prev_move
+
+    def print(self) -> None:
+        super().print()
+        print(f"\tFurthermore, it has the parent {self.parent} ",
+              "and previous_move={self.prev_move}.")
+
+
+class TrumpNode(ISMCTSBaseNode):
+    def __init__(self):
+        super().__init__()
+
+    def missing_moves(self, d: Determinization) -> Collection[Suit]:
+        res = set(Suit.list()).difference(map(lambda child: child.prev_move, self._children))
         return res
 
     def children(self, d: Determinization) -> set[ISMCTSNode]:
@@ -274,7 +287,7 @@ class ISMCTS:
             information_set: InformationSet,
             iter: int = 1000,
             pick_trump: bool = False) -> Card | Suit:
-        root = cls.make_root(pick_trump, (starting_player+len(trick))%4)
+        root = cls.make_root(pick_trump)
 
         for _ in range(iter):
             d0: Determinization = cls.determinize(reader, 
@@ -297,12 +310,12 @@ class ISMCTS:
     # for the right algorithm
     @classmethod
     def make_root(cls, 
-                  pick_trump: bool = False,
-                  curr_player: int = None) -> ISMCTSNode:
+                  pick_trump: bool = False
+                  ) -> ISMCTSBaseNode:
         if pick_trump:
             return TrumpNode()
         else:
-            return ISMCTSNode(current_player=curr_player)
+            return ISMCTSBaseNode()
 
     # This function creates a determinization i.e. a random set of hands for 
     # each player that could be possible with a certain information set.
@@ -322,11 +335,11 @@ class ISMCTS:
         # Then pick the appropriate amount of cards form each information set
         # uniform randomly.
 
-        hands: InformationSet = (set(), set(), set(), set())
+        hands: InformationSet = InformationSet((set(), set(), set(), set()))
 
-        counter = collections.Counter()
-        for i in info_set:
-            counter.update(i)
+        counter: collections.Counter[Card] = collections.Counter()
+        for hand in info_set:
+            counter.update(hand)
 
         if len(counter) != sum(cards_left):
             raise RuntimeError(f"Not enough cards to assign")
@@ -377,8 +390,8 @@ class ISMCTS:
         return d
 
     @classmethod
-    def select(cls, v: ISMCTSNode, 
-               d: Determinization) -> tuple[ISMCTSNode, Determinization]:
+    def select(cls, v: ISMCTSBaseNode, 
+               d: Determinization) -> tuple[ISMCTSBaseNode, Determinization]:
         
         while not d.finished() and len(v.missing_moves(d)) == 0:
             next: ISMCTSNode = max(v.children(d), key=lambda v: cls.bandit_method(d,v))
@@ -387,18 +400,21 @@ class ISMCTS:
         return v, d
     
     @classmethod
-    def expand(cls, v: ISMCTSNode, d: Determinization) -> tuple[ISMCTSNode, Determinization]:
-        new_move: Card = random.choice(list(v.missing_moves(d)))
+    def expand(cls, v: ISMCTSBaseNode, d: Determinization) -> tuple[ISMCTSNode, Determinization]:
+        moves: list[Card | Suit] = list(v.missing_moves(d))
+
+        new_move = random.choice(moves)
         d.make_move(new_move)
         v = v.add_child(new_move)
         return v, d
     
     # Update visitations and scores in the entire tree
     @classmethod
-    def backpropagate(cls, v: ISMCTSNode, d: Determinization, score: list[int]) -> None:
-        while v:
-            v.n += 1
-            v.r = [v.r[0] + score[0], v.r[1] + score[1]]
+    def backpropagate(cls, v: ISMCTSBaseNode, d: Determinization, score: list[int]) -> None:
+        node: ISMCTSBaseNode | None = v
+        while node:
+            node.n += 1
+            node.r = [node.r[0] + score[0], node.r[1] + score[1]]
 
             # Here n' is incremented for all children, it should be 
             # siblings according to Cowling et al. (2012).
@@ -406,16 +422,21 @@ class ISMCTS:
             for child in v.children(d):
                 child.n_accent += 1
             
-            v = v.parent
-            if v:
+            if type(node) == ISMCTSNode:
+                node = node.parent
+            else:
+                node = None
+
+            if node:
                 d.undo_move()
+
     
     # Simulate the rest of this determinization and return the end score.
     @classmethod
-    def simulate(cls, v: ISMCTSNode, d: Determinization) -> list[int]:
+    def simulate(cls, v: ISMCTSBaseNode, d: Determinization) -> list[int]:
         counter: int = 0
         while not d.finished():
-            moves: list[Card] = d.moves()
+            moves: list[Card] = list(d.moves())
             next: Card = random.choice(moves)
             d.make_move(next)
             counter += 1
@@ -425,4 +446,4 @@ class ISMCTS:
 
         d.undo_move(counter)
 
-        return scores
+        return scores 

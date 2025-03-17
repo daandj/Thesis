@@ -13,6 +13,10 @@ class ISMCTSPlayer(player.Player):
 
         self.sort_hand()
         card = ISMCTS.run(reader, trick, (self.loc-len(trick))%4, self.iset)
+
+        if type(card) != Card:
+            raise Exception("Wrong type of move selected")
+
         self.iset[self.loc].remove(card)
 
         return card
@@ -22,6 +26,9 @@ class ISMCTSPlayer(player.Player):
         self.sort_hand()
         suit = ISMCTS.run(reader, trick, (self.loc-len(trick))%4, 
                           self.iset, pick_trump=True)
+        if type(suit) != Suit:
+            raise Exception("Wrong type of move selected")
+        
         return suit
 
     def _get_cards(self) -> None:
@@ -32,7 +39,13 @@ class ISMCTSPlayer(player.Player):
         
         result_list[self.loc] = set(self.get_hand())
 
-        self.iset = tuple(result_list)
+        if len(result_list) != 4: 
+            raise Exception()
+
+        self.iset = InformationSet((result_list[0],
+                                    result_list[1],
+                                    result_list[2],
+                                    result_list[3]))
 
     # This function takes 
     def update_iset(self,

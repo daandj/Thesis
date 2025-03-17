@@ -1,10 +1,11 @@
 from abc import abstractmethod
+from collections.abc import Iterable
 import copy
 import random
-from typing import Protocol, final
+from typing import final
 from klaverjas import GameStateReader, Suit, Trick, Card, Value
 
-class Player(Protocol):
+class Player:
     # The variable hand is made private so it can be guaranteed, without
     # knowing anything about the implementation of the child class, that
     # the move that is played is a valid one, and that the hand variable
@@ -50,7 +51,7 @@ class Player(Protocol):
     @final
     def moves(trump: Suit,
               trick: Trick,
-              hand: list[Card]) -> list[Card]:
+              hand: Iterable[Card]) -> list[Card]:
         def isTrump(card: Card) -> bool: 
             return trump == card.suit
         
@@ -98,7 +99,7 @@ class Player(Protocol):
     def legal_moves(self,
                     trump: Suit,
                     trick: Trick,
-                    hand: list[Card] = None) -> list[Card]:
+                    hand: Iterable[Card] | None = None) -> list[Card]:
         if not hand:
             hand = self.__hand
         return self.moves(trump, trick, hand)
@@ -121,7 +122,7 @@ class Player(Protocol):
 
 class RandomPlayer(Player):
     def _choose_move(self, state_reader: GameStateReader, trick: Trick) -> Card:
-        return random.choice(self.legal_moves(state_reader, trick))
+        return random.choice(self.legal_moves(state_reader.trump, trick))
     
     def pick_trump(self, _: GameStateReader) -> Suit:
         return random.choice([Suit.CLUBS, Suit.DIAMONDS, Suit.HEARTS, 
