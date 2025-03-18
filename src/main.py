@@ -14,7 +14,7 @@ def main() -> int:
     player1.print_trick(game.state.tricks[7])
 
     print("Spelers ", winner + 1, " en ", winner + 3, " hebben gewonnen met  ", 
-          game.points[0], " versus ", game.points[1], " punten en ",
+          game.base_points[0], " versus ", game.base_points[1], " punten en ",
           game.roem[0], " versus ", game.roem[1], " roem!")
 
     return 0

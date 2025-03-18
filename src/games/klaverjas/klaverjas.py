@@ -27,6 +27,13 @@ class KlaverjasGame(Game):
                      self.state.points, self.state.roem))
     
     @property
+    def base_points(self) -> list[int]:
+        return self.state.points
+    
+    @property
+    def roem(self) -> list[int]:
+        return self.state.roem
+    @property
     def finished(self) -> int:
         return 8 == len(self.state_reader.tricks)
     

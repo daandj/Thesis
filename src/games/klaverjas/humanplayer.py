@@ -1,9 +1,9 @@
 from games.klaverjas.definitions import Card, Suit, Trick
 from games.klaverjas.gamestate import GameStateReader
-from player import Player
+from games.klaverjas.klaverjasplayer import KlaverjasPlayer
 
 
-class HumanPlayer(Player):
+class HumanPlayer(KlaverjasPlayer):
     def _choose_move(self, state_reader: GameStateReader, trick: Trick) -> Card:
 
         if len(state_reader.tricks) > 0:
