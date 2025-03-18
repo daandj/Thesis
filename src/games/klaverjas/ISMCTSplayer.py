@@ -1,4 +1,7 @@
-from algorithms.ISMCTS import ISMCTS, InformationSet
+from algorithms.ISMCTS.ISMCTS import ISMCTS
+from algorithms.ISMCTS.determinization import InformationSet
+from algorithms.bandits.UCB1 import UCB1
+from algorithms.bandits.bandit import Bandit
 from games.klaverjas.definitions import Card, Suit, Trick
 from games.klaverjas.gamestate import GameStateReader
 from games.klaverjas.klaverjasplayer import KlaverjasPlayer
@@ -6,6 +9,10 @@ from games.klaverjas.klaverjasplayer import KlaverjasPlayer
 
 class ISMCTSPlayer(KlaverjasPlayer):
     iset: InformationSet
+    bandit: Bandit = UCB1
+
+    def set_bandit(self, bandit: Bandit) -> None:
+        self.bandit = bandit
 
     def _choose_move(self, reader: GameStateReader, trick: Trick) -> Card:
         # First we must update the available information set based on the cards
@@ -13,7 +20,7 @@ class ISMCTSPlayer(KlaverjasPlayer):
         self.update_isets(reader, trick)
 
         self.sort_hand()
-        card = ISMCTS.run(reader, trick, (self.loc-len(trick))%4, self.iset)
+        card = ISMCTS.run(reader, trick, (self.loc-len(trick))%4, self.iset, bandit=self.bandit)
 
         if type(card) != Card:
             raise Exception("Wrong type of move selected")
