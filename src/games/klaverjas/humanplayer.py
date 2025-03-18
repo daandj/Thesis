@@ -1,4 +1,4 @@
-from klaverjas import Card, GameStateReader, Suit, Trick
+from games.klaverjas.klaverjas import Card, GameStateReader, Suit, Trick
 from player import Player
 
 

@@ -3,7 +3,7 @@ from collections.abc import Iterable
 import copy
 import random
 from typing import final
-from klaverjas import GameStateReader, Suit, Trick, Card, Value
+from games.klaverjas.klaverjas import GameStateReader, Suit, Trick, Card, Value
 
 class Player:
     # The variable hand is made private so it can be guaranteed, without

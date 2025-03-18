@@ -1,5 +1,5 @@
-from ISMCTS import ISMCTS, InformationSet
-from klaverjas import Card, GameStateReader, Suit, Trick
+from algorithms.ISMCTS import ISMCTS, InformationSet
+from games.klaverjas.klaverjas import Card, GameStateReader, Suit, Trick
 import player
 
 

@@ -7,7 +7,7 @@ from math import log, sqrt
 from operator import add, sub
 import random
 from typing import Final, NewType
-from klaverjas import Card, GameStateReader, Suit, Trick, Value
+from games.klaverjas.klaverjas import Card, GameStateReader, Suit, Trick, Value
 import player
 
 # For programmability (is that a word?) this also include the hand of _this_ player.

@@ -1,7 +1,7 @@
 from typing import Tuple
 import pytest
 
-from klaverjas import Card, GameState, GameStateReader, Suit, Trick, Value
+from games.klaverjas.klaverjas import Card, GameState, GameStateReader, Suit, Trick, Value
 from player import Player, RandomPlayer
 
 @pytest.fixture

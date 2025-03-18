@@ -1,7 +1,5 @@
-from functools import reduce
-from operator import add
 import random
-from klaverjas import Card, GameStateReader, Trick, GameState, Value
+from games.klaverjas.klaverjas import Card, GameStateReader, Trick, GameState
 from player import Player
 
 class Game:

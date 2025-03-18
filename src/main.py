@@ -1,7 +1,7 @@
 import sys
-from ISMCTSplayer import ISMCTSPlayer
+from games.klaverjas.ISMCTSplayer import ISMCTSPlayer
 from game import Game
-from humanplayer import HumanPlayer
+from games.klaverjas.humanplayer import HumanPlayer
 
 def main() -> int:
     player1 = HumanPlayer(0)
