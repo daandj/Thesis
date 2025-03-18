@@ -57,7 +57,7 @@ class GameState:
             if idx == 7:
                 self.points[winners] += 10
 
-            print(f"Intermediate stand: {winners=}, {self.points=}, {self.roem=}")
+            print(f"Intermediate points: {winners=}, {self.points=}, {self.roem=}")
 
         # Check for 'nat', note that only the team of the first player can be 'nat'
         if self.points[0] + self.roem[0] <= self.points[1] + self.roem[1]:

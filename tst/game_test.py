@@ -1,19 +1,19 @@
 import pytest
 
-from game import Game
+from games.klaverjas.klaverjas import KlaverjasGame
 from player import RandomPlayer
 
 @pytest.fixture
-def random_players_game() -> Game:
+def random_players_game() -> KlaverjasGame:
     [player1, player2, player3, player4] = [RandomPlayer(i) for i in range(0,4)]
 
-    game = Game(player1, player2, player3, player4)
+    game = KlaverjasGame(player1, player2, player3, player4)
     return game
 
 # Deal out random cards and check that every player has received enough
 # and different cards
-def test_deal(random_players_game: Game):
-    random_players_game.deal()
+def test_deal(random_players_game: KlaverjasGame):
+    random_players_game.setup()
 
     all_cards = []
 
