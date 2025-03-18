@@ -2,7 +2,7 @@ import algorithms.ISMCTS as ISMCTS
 from games.klaverjas.ISMCTSplayer import ISMCTSPlayer
 import pytest
 
-from games.klaverjas.klaverjas import Card, Suit, Trick, Value
+from games.klaverjas.definitions import Card, Suit, Trick, Value
 
 # Boilerplate
 

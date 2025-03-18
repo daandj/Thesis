@@ -1,5 +1,6 @@
 import random
-from games.klaverjas.klaverjas import Card, GameStateReader, Trick, GameState
+from games.klaverjas.definitions import Card, Trick
+from games.klaverjas.gamestate import GameState, GameStateReader
 from player import Player
 
 class Game:

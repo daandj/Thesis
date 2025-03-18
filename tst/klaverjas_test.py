@@ -1,6 +1,7 @@
 import pytest
 
-from games.klaverjas.klaverjas import Card, GameState, Suit, Trick, Value
+from games.klaverjas.definitions import Card, Suit, Trick, Value
+from games.klaverjas.gamestate import GameState
 
 @pytest.fixture
 def spades_ten() -> Card:
