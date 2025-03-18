@@ -1,9 +1,10 @@
-from ISMCTS import ISMCTS, InformationSet
-from klaverjas import Card, GameStateReader, Suit, Trick
-import player
+from algorithms.ISMCTS import ISMCTS, InformationSet
+from games.klaverjas.definitions import Card, Suit, Trick
+from games.klaverjas.gamestate import GameStateReader
+from games.klaverjas.klaverjasplayer import KlaverjasPlayer
 
 
-class ISMCTSPlayer(player.Player):
+class ISMCTSPlayer(KlaverjasPlayer):
     iset: InformationSet
 
     def _choose_move(self, reader: GameStateReader, trick: Trick) -> Card:
