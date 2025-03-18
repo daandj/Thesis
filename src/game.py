@@ -1,7 +1,7 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 from player import Player
 
-class Game:
+class Game(ABC):
     players: tuple[Player, ...]
 
     # Public methods

@@ -1,7 +1,7 @@
 import pytest
 
 from games.klaverjas.klaverjas import KlaverjasGame
-from player import RandomPlayer
+from games.klaverjas.klaverjasplayer import RandomPlayer
 
 @pytest.fixture
 def random_players_game() -> KlaverjasGame:

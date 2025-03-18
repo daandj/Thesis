@@ -3,11 +3,12 @@ import pytest
 
 from games.klaverjas.definitions import Card, Suit, Trick, Value
 from games.klaverjas.gamestate import GameState, GameStateReader
-from player import Player, RandomPlayer
+
+from games.klaverjas.klaverjasplayer import KlaverjasPlayer, RandomPlayer
 
 @pytest.fixture
 # Returns a player with  a dealt hand
-def player_with_hand() -> Player:
+def player_with_hand() -> KlaverjasPlayer:
     p = RandomPlayer(0)
     p.deal([Card(Suit.HEARTS, Value.SEVEN),
             Card(Suit.HEARTS, Value.JACK),
@@ -29,7 +30,7 @@ def empty_trick() -> Tuple[Trick, GameState, GameStateReader]:
 
     return test, state, reader
 
-def test_first_legal_move(player_with_hand: Player,
+def test_first_legal_move(player_with_hand: KlaverjasPlayer,
                     empty_trick: Tuple[Trick, GameState, GameStateReader]):
     p = player_with_hand
     test, state, reader = empty_trick
@@ -38,7 +39,7 @@ def test_first_legal_move(player_with_hand: Player,
     assert p.legal_moves(reader, test) == p.get_hand()
 
 # A non trump card has been played, so the legal move should be to match
-def test_second_legal_move_no_trump(player_with_hand: Player,
+def test_second_legal_move_no_trump(player_with_hand: KlaverjasPlayer,
                     empty_trick: Tuple[Trick, GameState, GameStateReader]):
     p = player_with_hand
     test, state, reader = empty_trick
@@ -50,7 +51,7 @@ def test_second_legal_move_no_trump(player_with_hand: Player,
 
 # The first move was a trump card, higher than one that the player has, but not
 # the other, so they have to play of any trump cards in their hand.
-def test_second_legal_move_trump_middle(player_with_hand: Player,
+def test_second_legal_move_trump_middle(player_with_hand: KlaverjasPlayer,
                     empty_trick: Tuple[Trick, GameState, GameStateReader]):
     p = player_with_hand
     test, state, reader = empty_trick
@@ -63,7 +64,7 @@ def test_second_legal_move_trump_middle(player_with_hand: Player,
 
 # The first move was a trump card, higher than any that the player has, so 
 # they have to play of any trump cards in their hand.
-def test_second_legal_move_trump_lower(player_with_hand: Player, 
+def test_second_legal_move_trump_lower(player_with_hand: KlaverjasPlayer, 
                     empty_trick: Tuple[Trick, GameState, GameStateReader]):
     p = player_with_hand
     test, state, reader = empty_trick
@@ -76,7 +77,7 @@ def test_second_legal_move_trump_lower(player_with_hand: Player,
     assert Card(Suit.CLUBS, Value.NINE) in legal_moves
     assert Card(Suit.CLUBS, Value.EIGHT) in legal_moves
     
-def test_second_legal_move_trump_higher(player_with_hand: Player, 
+def test_second_legal_move_trump_higher(player_with_hand: KlaverjasPlayer, 
                     empty_trick: Tuple[Trick, GameState, GameStateReader]):
     p = player_with_hand
     test, state, reader = empty_trick
@@ -89,7 +90,7 @@ def test_second_legal_move_trump_higher(player_with_hand: Player,
     assert Card(Suit.CLUBS, Value.NINE) in legal_moves
     assert Card(Suit.CLUBS, Value.EIGHT) in legal_moves
 
-def test_placeholder(player_with_hand: Player,
+def test_placeholder(player_with_hand: KlaverjasPlayer,
                     empty_trick: Tuple[Trick, GameState, GameStateReader]):
     p = player_with_hand
     test, state, reader = empty_trick

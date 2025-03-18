@@ -1,4 +1,5 @@
-import algorithms.ISMCTS as ISMCTS
+from algorithms.ISMCTS import ISMCTS
+from algorithms.ISMCTS.determinization import Determinization, InformationSet
 from games.klaverjas.ISMCTSplayer import ISMCTSPlayer
 import pytest
 
@@ -28,7 +29,7 @@ def new_player_with_hand(new_player: ISMCTSPlayer,
     return new_player
 
 @pytest.fixture
-def determinization() -> ISMCTS.Determinization:
+def determinization() -> Determinization:
     pass
 
 # Test the ISMCTS class
