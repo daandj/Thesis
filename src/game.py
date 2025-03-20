@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import final
 from player import Player
 
 class Game(ABC):
@@ -11,7 +12,8 @@ class Game(ABC):
     # For pretty printing using the std library print function
     def __str__(self):
         pass
-
+    
+    @final
     def set_players(
             self, 
             players: tuple[Player, ...]
@@ -21,6 +23,7 @@ class Game(ABC):
         
         self.players = players
 
+    @final
     def set_player(self, player: Player, position: int) -> None:
         if position < 0 or position > self.num_players:
             raise ValueError(f'Invalid place number for a player (must be between 0 and {self.num_players})')
@@ -28,6 +31,7 @@ class Game(ABC):
         tmp_list[position] = player
         self.players = tuple(tmp_list)
     
+    @final
     def play(self) -> int:
         starting_player = 0
         self.setup(starting_player)
@@ -43,7 +47,7 @@ class Game(ABC):
         
     # Give everyone their random cards
     @abstractmethod
-    def setup(self, starting_player: int = 0) -> None:
+    def setup(self, *args) -> None:
         raise NotImplementedError()
     
     # Play one round of the game and then return the player whose turn it is next

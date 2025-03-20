@@ -2,6 +2,7 @@ import sys
 from games.klaverjas.ISMCTSplayer import ISMCTSPlayer
 from games.klaverjas.humanplayer import HumanPlayer
 from games.klaverjas.klaverjas import KlaverjasGame
+import games.tictactoe as ttt
 
 def main() -> int:
     player1 = HumanPlayer(0)
@@ -19,5 +20,13 @@ def main() -> int:
 
     return 0
 
+def tictactoe() -> int:
+    game = ttt.TicTacToe(ttt.HumanPlayer(0), ttt.RandomPlayer(1))
+    game.set_board_size(4)
+    winner = game.play()
+
+    print(f"De winnaar is speler {winner+1}!")
+    return 0
+
 if __name__ == '__main__':
-    sys.exit(main())
+    sys.exit(tictactoe())
