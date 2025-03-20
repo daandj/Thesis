@@ -18,7 +18,7 @@ class Move(IntEnum):
         return ["X", "O"][self.value]
     
 class TicTacToeBoard():
-    board: list[list[Move]]
+    board: list[list[int]]
     size: int
     winner: int
 
@@ -42,7 +42,7 @@ class TicTacToeBoard():
 
     @property
     def moves(self) -> list[int]:
-        board_list: list[Move] = reduce(add, self.board)
+        board_list: list[int] = reduce(add, self.board)
         empties = list(map(lambda x: x == Move.empty, board_list))
         return [idx for idx, x in enumerate(empties) if x]
 
@@ -76,7 +76,7 @@ class TicTacToeBoard():
     
         return False
     
-    def update(self, place: int, move: Move) -> bool:
+    def update(self, place: int, move: int) -> bool:
         if self.board[place // self.size][place % self.size] != Move.empty:
             return False
         
