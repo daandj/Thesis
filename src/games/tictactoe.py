@@ -2,7 +2,6 @@ from enum import IntEnum
 from functools import reduce
 from operator import add
 import random
-from typing import Union
 from algorithms.MCTS import MCTS
 from game import Game
 from player import Player
@@ -21,11 +20,12 @@ class TicTacToeBoard():
     board: list[list[int]]
     size: int
     winner: int
+    prev_player: int
 
     def __init__(self, size: int):
         self.size = size
         self.board = [[Move.empty for _ in range(size)] for _ in range(size)]
-
+        self.prev_player = 0
         self.winner = Move.empty.value
 
     def print(self) -> None:
@@ -74,16 +74,21 @@ class TicTacToeBoard():
                 self.winner = player.value
                 return True
     
+        if all([Move.empty not in row for row in self.board]):
+            self.winner = -1
+            return True
         return False
     
-    def update(self, place: int, move: int) -> bool:
+    def update(self, place: int) -> bool:
         if self.board[place // self.size][place % self.size] != Move.empty:
             return False
         
         if place < 0 or place > self.size*self.size-1:
             return False
         
-        self.board[place // self.size][place % self.size] = move
+        self.board[place // self.size][place % self.size] = self.prev_player
+
+        self.prev_player = (self.prev_player + 1) % 2
 
         return True
     
@@ -97,6 +102,13 @@ class TicTacToeBoard():
             points[player.value] = 1 if self.winner == player.value else 0
 
         return points
+    
+    def undo(self, place: int) -> None:
+        if (self.board[place // self.size][place % self.size] == Move.empty):
+            raise RuntimeError("Cannot undo an empty move")
+        
+        self.board[place // self.size][place % self.size] = Move.empty
+        self.prev_player = (self.prev_player + 1) % 2
 
 class RandomPlayer(Player):
     def make_move(self, board: TicTacToeBoard) -> int:
@@ -127,7 +139,7 @@ class HumanPlayer(Player):
         
 class MCTSPlayer(Player):
     def make_move(self, board: TicTacToeBoard) -> int:
-        move = MCTS[Move].run(self.loc, board)
+        move = MCTS.run(board)
         return move
 
 
@@ -153,7 +165,7 @@ class TicTacToe(Game):
             tries -= 1
 
             move = self.players[starting_player].make_move(self.board)
-            if self.board.update(move, Move(starting_player)):
+            if self.board.update(move):
                 break
     
         self.board.print()
