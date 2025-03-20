@@ -6,6 +6,5 @@
     "python.testing.pytestEnabled": true,
     "python.analysis.extraPaths": [
         "./src"
-    ],
-    "python.analysis.ignore": [ "tst/**/*.py" ]
+    ]
 }
