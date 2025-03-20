@@ -27,13 +27,13 @@ class RandomPlayer(Player):
 class HumanPlayer(Player):
     
     def make_move(self, board: list[list[Move]]) -> int:
-        print("Het bord is:")
+        print("\n\nHet bord is:")
 
         TicTacToe.print_board(board)
 
         print("")
         print("Kies uit een van de volgende vakjes:")
-        TicTacToe.print_empty_board()
+        TicTacToe.print_empty_board(len(board))
         print("")
         while (True):
             input_str: str = input("Kies een kaart om te spelen "
@@ -140,7 +140,7 @@ class TicTacToe(Game):
     
     @classmethod
     def print_board(self, board: list[list[Move]]) -> None:
-        print("+-+-+-+")
+        print("+"+"-+"*len(board))
         for row in board:
             print("|",end="")
             for item in row:
@@ -149,15 +149,15 @@ class TicTacToe(Game):
                 else:
                     print(str(item), end="")
                 print("|",end="")
-            print("\n+-+-+-+")
+            print("\n+"+"-+"*len(board))
 
 
     @classmethod
     def print_empty_board(self, size: int = 3) -> None:
-        print("+-+-+-+")
+        print("+"+"--+"*size)
         for i in range(size):
             print("|",end="")
             for j in range(size):
-                print(str(i*size+j), end="")
+                print(f"{(i*size+j):2d}", end="")
                 print("|",end="")
-            print("\n+-+-+-+")
+            print("\n+"+"--+"*size)
