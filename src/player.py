@@ -6,3 +6,6 @@ class Player(ABC):
 
     def __init__(self, location: int):
         self.loc = location
+
+    def make_move(self, *args):
+        pass
