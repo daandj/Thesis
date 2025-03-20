@@ -1,6 +1,4 @@
 import sys
-from algorithms.bandits.UCB1 import UCB1
-from algorithms.bandits.UCB2 import UCB2
 from games.klaverjas.ISMCTSplayer import ISMCTSPlayer
 from games.klaverjas.humanplayer import HumanPlayer
 from games.klaverjas.klaverjas import KlaverjasGame

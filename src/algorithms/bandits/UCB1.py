@@ -1,5 +1,5 @@
 from math import log, sqrt
-from typing import Final
+from typing import Final, Iterable
 from algorithms.ISMCTS.determinization import Determinization
 from algorithms.bandits import bandit
 
@@ -12,6 +12,8 @@ class UCB1(bandit.Bandit):
         return child.reward(d)/child.n+cls.k*sqrt(log(child.n_accent)/child.n)
     
     @classmethod
-    def choose_arm(cls, node: bandit.Node, *args) -> bandit.Node:
+    def choose_arm(cls, node: bandit.Node, 
+                   children: Iterable[bandit.Node] = [], 
+                   *args) -> bandit.Node:
         d: Determinization = args[0]
         return max(node.children(d), key=lambda v: cls.score(d,v))
