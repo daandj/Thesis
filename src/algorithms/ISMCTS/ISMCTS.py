@@ -97,6 +97,7 @@ class ISMCTS:
             pick_trump: bool = False,
             bandit: Bandit = UCB1) -> Card | Suit:
         root = cls.make_root(pick_trump)
+        bandit.initialize_node(root)
 
         for i in range(iter):
             d0: Determinization = cls.determinize(reader, 
@@ -107,10 +108,10 @@ class ISMCTS:
             v, d = cls.select(root, d0, bandit)
 
             if len(v.missing_moves(d)) > 0:
-                v, d = cls.expand(v, d)
+                v, d = cls.expand(v, d, bandit)
 
             res = cls.simulate(v, d)
-            cls.backpropagate(v,d,res)
+            cls.backpropagate(v,d,res,bandit)
             
         best_child = max(root.all_children(), key=lambda child: child.n)
         return best_child.prev_move
@@ -204,25 +205,36 @@ class ISMCTS:
                bandit: Bandit) -> tuple[ISMCTSBaseNode, Determinization]:
         
         while not d.finished() and len(v.missing_moves(d)) == 0:
-            next: ISMCTSNode = bandit.choose_arm(v,d)
+            next: ISMCTSNode = bandit.choose_arm(v,v.children(d),d)
             d.make_move(next.prev_move)
             v = next
         return v, d
     
     @classmethod
-    def expand(cls, v: ISMCTSBaseNode, d: Determinization) -> tuple[ISMCTSNode, Determinization]:
+    def expand(cls, v: ISMCTSBaseNode,
+               d: Determinization,
+               bandit: Bandit) -> tuple[ISMCTSNode, Determinization]:
         moves: list[Card | Suit] = list(v.missing_moves(d))
 
         new_move = random.choice(moves)
         d.make_move(new_move)
         v = v.add_child(new_move)
+        bandit.initialize_node(v)
         return v, d
     
     # Update visitations and scores in the entire tree
     @classmethod
-    def backpropagate(cls, v: ISMCTSBaseNode, d: Determinization, score: list[int]) -> None:
+    def backpropagate(cls, v: ISMCTSBaseNode, 
+                      d: Determinization, score: list[int], 
+                      bandit: Bandit) -> None:
         node: ISMCTSBaseNode | None = v
         while node:
+            def reward(score: list[int]) -> int:
+                return (score[0] - score[1]) * pow(-1, d.current_player) # Switch these around 
+                # because the score in this node is the one received by the 
+                # player that created it, which is the one associated with a 
+                # node one level higher.
+            bandit.update_node(node, node.children(d), reward(score))
             node.n += 1
             node.r = [node.r[0] + score[0], node.r[1] + score[1]]
 
