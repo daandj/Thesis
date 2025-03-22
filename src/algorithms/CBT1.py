@@ -80,10 +80,6 @@ class CBT1:
         def UCB1(v: MCTSNode, b: Board) -> float:
             k: Final[float] = 0.75
             return v.reward(b)/v.n+k*sqrt(log(v.n_accent)/v.n)
-        
-        def CBandit(v: MCTSNode, b: Board) -> float:
-            k: Final[float] = 0.75
-            return v.reward(b)/v.n+k*sqrt(log(v.n_accent)/v.n)
 
         while not b.finished and len(cls.missing_moves(v, b)) == 0 and v.depth < levels:
             if v.depth == 0:
