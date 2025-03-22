@@ -28,23 +28,33 @@ class Board(Protocol):
 class MCTSNode:
     n: int
     parent: MCTSNode | None
-    children: set[MCTSNode]
+    children: list[MCTSNode]
     prev_move: int
     n_accent: int
     r: list[int]
+    depth: int
 
     def __init__(self, parent: MCTSNode | None = None):
         self.parent = parent
         self.n_accent = 0
         self.n = 0
-        self.children = set()
+        self.children = list()
         self.r = [0,0]
+
+        self.depth = parent.depth+1 if parent else 0
 
     def add_child(self, move: int) -> MCTSNode:
         child = MCTSNode(self)
         child.prev_move = move
-        self.children.add(child)
+        self.children.append(child)
         return child
+    
+    def add_parent(self, parent: MCTSNode) -> None:
+        if self.parent:
+            raise RuntimeError("Node already has a parent")
+        
+        self.parent = parent
+        self.depth = self.parent.depth+1
 
     def reward(self, b: Board) -> int:
         if b.prev_player == 0:
@@ -134,6 +144,6 @@ class MCTS:
         return scores 
     
     @classmethod
-    def missing_moves(cls, v: MCTSNode, b: Board) -> Collection[int]:
+    def missing_moves(cls, v: MCTSNode, b: Board) -> list[int]:
         res = set(b.moves).difference(map(lambda child: child.prev_move, v.children))
-        return res
+        return list(res)

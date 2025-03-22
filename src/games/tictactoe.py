@@ -2,6 +2,7 @@ from enum import IntEnum
 from functools import reduce
 from operator import add
 import random
+from algorithms.CBT1 import CBT1
 from algorithms.MCTS import MCTS
 from game import Game
 from player import Player
@@ -141,6 +142,11 @@ class MCTSPlayer(Player):
     def make_move(self, board: TicTacToeBoard) -> int:
         move = MCTS.run(board)
         return move
+    
+class CBT1Player(Player):
+    def make_move(self, board: TicTacToeBoard) -> int:
+        move = CBT1.run(board)
+        return move 
 
 
 class TicTacToe(Game):
