@@ -127,7 +127,7 @@ class HumanPlayer(Player):
         TicTacToe.print_empty_board(board.size)
         print("")
         while (True):
-            input_str: str = input("Kies een kaart om te spelen "
+            input_str: str = input("Kies een vakje "
                                     f"(0-{board.size*board.size-1}): ")
             if (not input_str.isdigit()
                 or int(input_str) >= board.size*board.size

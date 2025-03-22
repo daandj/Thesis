@@ -8,21 +8,18 @@ import numpy as np
 from algorithms.MCTS import Board, MCTSNode
 
 class Bandit:
+    rng: ClassVar[np.random.Generator] = np.random.default_rng()
+
     @classmethod
     def initialize_node(cls, node: MCTSNode, b: Board) -> None:
         length = len(b.moves)
         node.p = np.ones(length)/length
         node.mu_hat = np.ones(length)/length
-        node.ucb = None
-        pass
 
     @classmethod
     def update_node(cls, node: MCTSNode,
                     board: Board,
                     score: Iterable[int]) -> None:
-        def UCB1(v: MCTSNode, b: Board) -> float:
-            k: Final[float] = 0.75
-            return v.reward(b)/v.n+k*sqrt(log(v.n_accent)/v.n)
         
         node.n += 1
         node.r = [node.r[0] + score[0], node.r[1] + score[1]]
@@ -32,23 +29,31 @@ class Bandit:
         # TODO: Check that that makes a difference
         for child in node.children:
             child.n_accent += 1
+
+        # Calculate the new probility distribution over all actions
         if node.depth == 1 and node.children:
-            node.ucb = max(node.children, key=lambda v: UCB1(v,board))
+            idx, child = max(enumerate(node.children), key=lambda tup: cls.UCB1(tup[1],board))
+            node.p = np.zeros(len(node.children))
+            node.p[idx] = 1
 
     @classmethod
-    def choose_arm(self, node: MCTSNode,
-                   board: Board) -> MCTSNode:
-        raise NotImplementedError()
+    def choose_arm(cls, v: MCTSNode,
+                   b: Board) -> MCTSNode:
+        # Sample from the distribution p
+        return cls.rng.choice(v.children, p=v.p)
+
+    @classmethod
+    def UCB1(cls, v: MCTSNode, b: Board) -> float:
+        k: Final[float] = 0.75
+        return v.reward(b)/v.n+k*sqrt(log(v.n_accent)/v.n)
 
 class CBT1:
-
-    rng: ClassVar[np.random.Generator] = np.random.default_rng()
 
     @classmethod
     def run(cls,
             board: Board,
             levels: int = 2,
-            iter: int = 1500,
+            iter: int = 1000,
             nu: int | None = None,
             gamma: int | None = None) -> int:
 
@@ -77,22 +82,9 @@ class CBT1:
 
     @classmethod
     def select(cls, v: MCTSNode, b: Board, levels: int) -> MCTSNode:
-        def UCB1(v: MCTSNode, b: Board) -> float:
-            k: Final[float] = 0.75
-            return v.reward(b)/v.n+k*sqrt(log(v.n_accent)/v.n)
-
         while not b.finished and len(cls.missing_moves(v, b)) == 0 and v.depth < levels:
-            if v.depth == 0:
-                next: MCTSNode = cls.rng.choice(v.children, p=v.p)
-            elif v.depth == 1:
-                next: MCTSNode = max(v.children, key=lambda v: UCB1(v,b))
-                if next != v.ucb:
-                    raise RuntimeError("Oh no...")
-            else:
-                raise RuntimeError("No algorithm for the third level")
-
-            v = next
-            b.update(next.prev_move)
+            v = Bandit.choose_arm(v, b)
+            b.update(v.prev_move)
 
         return v
     
