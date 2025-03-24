@@ -84,28 +84,27 @@ class CBT1:
         self.gamma = gamma
         self.b = board
 
-        if not nu:
+    def run(self, iter: int = 1000) -> int:
+
+        if not self.nu:
             self.nu = self.K
 
-        if not gamma:
+        if not self.gamma:
             self.gamma = sqrt(
-                2*self.K*self.iter/self.regression_regret(self.iter)
+                2*self.K*iter/self.regression_regret(iter)
             )
-
-        
-    def run(self) -> int:
         bandit = Bandit(self.nu, self.gamma)
         
         root = MCTSNode()
-        bandit.initialize_node(root)
+        bandit.initialize_node(root, self.b)
         
-        for i in range(self.iter):
+        for i in range(iter):
             v = self.select(bandit, root)
 
             if len(self.missing_moves(v)) > 0:
                 v = self.expand(bandit, v)
 
-            res = self.simulate(v)
+            res = self.simulate()
             self.backpropagate(bandit, v, res)
             
         best_child = max(root.children, key=lambda child: child.n)
@@ -113,14 +112,14 @@ class CBT1:
 
     def select(self, bandit: Bandit, v: MCTSNode) -> MCTSNode:
         while not self.b.finished and \
-            len(self.missing_moves(v, self.b)) == 0 and v.depth < self.levels:
+            len(self.missing_moves(v)) == 0 and v.depth < self.levels:
             v = bandit.choose_arm(v, self.b)
             self.b.update(v.prev_move)
 
         return v
     
     def expand(self, bandit: Bandit, v: MCTSNode) -> MCTSNode:
-        moves: list[int] = list(self.missing_moves(v,self.b))
+        moves: list[int] = list(self.missing_moves(v))
 
         #TODO: Change this to adding all children at once.
         #UPDATE: This is hard, because those children aren't visited yet
@@ -155,7 +154,6 @@ class CBT1:
             node = node.parent
     
     # Simulate the rest of this determinization and return the end score.
-    @classmethod
     def simulate(self) -> int:
         board: Board = copy.deepcopy(self.b)
         while not board.finished:
