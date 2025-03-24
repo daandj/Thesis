@@ -33,19 +33,39 @@ class Bandit:
 
         # Calculate the new probility distribution over all actions
         if node.depth == 1 and node.children:
-            idx, child = max(enumerate(node.children), key=lambda tup: cls.UCB1(tup[1],board))
-            node.p = np.zeros(len(node.children))
+            idx, child = min(enumerate(node.children), key=lambda tup: self.UCB1(tup[1],board))
+            node.p = np.zeros(len(board.moves))
             node.p[idx] = 1
 
-    @classmethod
-    def choose_arm(cls, v: MCTSNode,
+            self.update_avgs(node, board)
+        elif node.depth == 0:
+            pi = np.zeros(len(board.moves))
+            for idx, child in enumerate(node.children):
+                pi[idx] = np.dot(child.p, child.mu_hat)
+
+            j = np.argmax(pi)
+            
+            for idx, pi_i in enumerate(pi):
+                if idx == j:
+                    continue
+
+                node.p[idx] = 1/(self.nu+self.gamma*(pi[j]-pi_i))
+            node.p[j]=1+node.p[j]-np.sum(node.p)
+
+    def choose_arm(self, v: MCTSNode,
                    b: Board) -> MCTSNode:
         # Sample from the distribution p, regardles of what kind of node.
         return self.rng.choice(v.children, p=v.p)
 
     def UCB1(self, v: MCTSNode, b: Board) -> float:
         k: Final[float] = 0.75
-        return v.reward(b)/v.n+k*sqrt(log(v.n_accent)/v.n)
+        return v.r/v.n+k*sqrt(log(v.n_accent)/v.n)
+    
+    def update_avgs(self, node: MCTSNode, board: Board) -> None:
+        node.mu_hat = np.zeros(len(board.moves))
+        for i, child in enumerate(node.children):
+            node.mu_hat[i] = child.r/child.n
+
 
 class CBT1:
 

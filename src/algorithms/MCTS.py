@@ -60,7 +60,7 @@ class MCTSNode:
         if b.prev_player == 0:
             return self.r
         else:
-            return self.r
+            return -self.r
         
 
 class MCTS:
