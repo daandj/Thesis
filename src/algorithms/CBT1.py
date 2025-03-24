@@ -88,7 +88,9 @@ class CBT1:
             self.nu = self.K
 
         if not gamma:
-            self.gamma = sqrt(2*self.K*iter/self.regression_regret(iter))
+            self.gamma = sqrt(
+                2*self.K*self.iter/self.regression_regret(self.iter)
+            )
 
         
     def run(self) -> int:
