@@ -68,50 +68,57 @@ class Bandit:
 
 
 class CBT1:
+    K: int
+    levels: int
+    nu: float
+    gamma: float
+    b: Board
 
-    @classmethod
-    def run(cls,
-            board: Board,
-            levels: int = 2,
-            iter: int = 1000,
-            nu: int | None = None,
-            gamma: int | None = None) -> int:
+    def __init__(self, board: Board,
+                 levels: int = 2,
+                 nu: float | None = None,
+                 gamma: float | None = None):
+        self.K: Final[int] = len(board.moves)
+        self.levels = levels
+        self.nu = nu
+        self.gamma = gamma
+        self.b = board
 
-        K: Final[int] = len(board.moves)
-        
         if not nu:
-            nu = K
+            self.nu = self.K
 
         if not gamma:
-            gamma = sqrt(2*K*iter/cls.regression_regret(iter))
-        bandit = Bandit(nu, gamma)
+            self.gamma = sqrt(2*self.K*iter/self.regression_regret(iter))
+
+        
+    def run(self) -> int:
+        bandit = Bandit(self.nu, self.gamma)
         
         root = MCTSNode()
-        bandit.initialize_node(root, board)
+        bandit.initialize_node(root)
         
-        for i in range(iter):
-            v = cls.select(bandit, root, board, levels)
+        for i in range(self.iter):
+            v = self.select(bandit, root)
 
-            if len(cls.missing_moves(v, board)) > 0:
-                v = cls.expand(bandit, v, board)
+            if len(self.missing_moves(v)) > 0:
+                v = self.expand(bandit, v)
 
-            res = cls.simulate(v, board)
-            cls.backpropagate(bandit, v, board, res)
+            res = self.simulate(v)
+            self.backpropagate(bandit, v, res)
             
         best_child = max(root.children, key=lambda child: child.n)
         return best_child.prev_move
 
-    @classmethod
-    def select(cls, bandit: Bandit, v: MCTSNode, b: Board, levels: int) -> MCTSNode:
-        while not b.finished and len(cls.missing_moves(v, b)) == 0 and v.depth < levels:
-            v = bandit.choose_arm(v, b)
-            b.update(v.prev_move)
+    def select(self, bandit: Bandit, v: MCTSNode) -> MCTSNode:
+        while not self.b.finished and \
+            len(self.missing_moves(v, self.b)) == 0 and v.depth < self.levels:
+            v = bandit.choose_arm(v, self.b)
+            self.b.update(v.prev_move)
 
         return v
     
-    @classmethod
-    def expand(cls, bandit: Bandit, v: MCTSNode, b: Board) -> MCTSNode:
-        moves: list[int] = list(cls.missing_moves(v,b))
+    def expand(self, bandit: Bandit, v: MCTSNode) -> MCTSNode:
+        moves: list[int] = list(self.missing_moves(v,self.b))
 
         #TODO: Change this to adding all children at once.
         #UPDATE: This is hard, because those children aren't visited yet
@@ -129,27 +136,26 @@ class CBT1:
         new_move = random.choice(moves)
         v = v.add_child(new_move)
 
-        b.update(v.prev_move)
-        bandit.initialize_node(v,b)
+        self.b.update(v.prev_move)
+        bandit.initialize_node(v,self.b)
 
         return v
     
     # Update visitations and scores in the entire tree
-    @classmethod
-    def backpropagate(cls, bandit: Bandit, v: MCTSNode, b: Board, score: int) -> None:
+    def backpropagate(self, bandit: Bandit, v: MCTSNode, score: int) -> None:
         node: MCTSNode | None = v
         while node:
-            bandit.update_node(node, b, score)
+            bandit.update_node(node, self.b, score)
 
             if (node.parent != None):
-                b.undo(node.prev_move)
+                self.b.undo(node.prev_move)
 
             node = node.parent
     
     # Simulate the rest of this determinization and return the end score.
     @classmethod
-    def simulate(cls, v: MCTSNode, b: Board) -> int:
-        board: Board = copy.deepcopy(b)
+    def simulate(self) -> int:
+        board: Board = copy.deepcopy(self.b)
         while not board.finished:
             moves: list[int] = list(board.moves)
             next: int = random.choice(moves)
@@ -159,11 +165,9 @@ class CBT1:
 
         return score
     
-    @classmethod
-    def missing_moves(cls, v: MCTSNode, b: Board) -> list[int]:
-        res = set(b.moves).difference(map(lambda child: child.prev_move, v.children))
+    def missing_moves(self, v: MCTSNode) -> list[int]:
+        res = set(self.b.moves).difference(map(lambda child: child.prev_move, v.children))
         return list(res)
     
-    @classmethod
-    def regression_regret(cls, t: int):
+    def regression_regret(self, t: int) -> float:
         return sqrt(t) # TODO: This, but correct.
