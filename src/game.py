@@ -39,11 +39,7 @@ class Game(ABC):
         while not self.finished:
             starting_player = self.play_round(starting_player)
 
-        totals = self.points
-        max_points = max(totals)
-        winner = totals.index(max_points)
-
-        return winner
+        return self.winner
         
     # Give everyone their random cards
     @abstractmethod
@@ -57,7 +53,7 @@ class Game(ABC):
 
     @property
     @abstractmethod
-    def points(self) -> list[int]:
+    def points(self) -> int:
         raise NotImplementedError()
     
     @property
@@ -73,4 +69,9 @@ class Game(ABC):
     @property
     @abstractmethod
     def finished(self) -> bool:
+        raise NotImplementedError()
+    
+    @property
+    @abstractmethod
+    def winner(self) -> int:
         raise NotImplementedError()

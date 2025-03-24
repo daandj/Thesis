@@ -94,13 +94,18 @@ class TicTacToeBoard():
         return True
     
     @property
-    def points(self) -> list[int]:
+    def points(self) -> int:
         if not self.finished:
             raise RuntimeError("No points before finishing the game")
         
-        points: list[int] = [0,0]
-        for player in [Move.O, Move.X]:
-            points[player.value] = 1 if self.winner == player.value else 0
+        points = 0
+
+        if self.winner == Move.O:
+            points = 1
+        elif self.winner == Move.X:
+            points = -1
+        else:
+            points = 0
 
         return points
     
@@ -179,15 +184,8 @@ class TicTacToe(Game):
         return 1-starting_player
 
     @property
-    def points(self) -> list[int]:
-        if not self.board.finished:
-            raise RuntimeError("No points before finishing the game")
-        
-        points: list[int] = [0] * len(self.players)
-        for player in [Move.O, Move.X]:
-            points[player.value] = 1 if self.board.winner == player.value else 0
-
-        return points
+    def points(self) -> int:
+        return self.board.points
     
     @property
     def name(self) -> str:
@@ -210,3 +208,7 @@ class TicTacToe(Game):
     @property
     def finished(self) -> bool:
         return self.board.finished
+    
+    @property
+    def winner(self) -> int:
+        return 1 if self.points < 0 else 0

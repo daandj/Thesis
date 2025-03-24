@@ -25,7 +25,7 @@ def tictactoe() -> int:
     game.set_board_size(3)
     winner = game.play()
 
-    if game.points[0] == game.points[1]:
+    if game.points == 0:
         print(f"Er is helaas geen winnaar...")
     else:
         print(f"De winnaar is speler {winner+1}!")

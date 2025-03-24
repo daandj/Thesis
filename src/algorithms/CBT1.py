@@ -1,28 +1,29 @@
-from collections.abc import Collection, Iterable
+from collections.abc import Iterable
 import copy
 from math import sqrt, log
 import random
-from typing import ClassVar, Final
+from typing import Final
 
 import numpy as np
 from algorithms.MCTS import Board, MCTSNode
 
 class Bandit:
-    rng: ClassVar[np.random.Generator] = np.random.default_rng()
+    def __init__(self, nu: int, gamma: float) -> None:
+        self.nu = nu
+        self.gamma = gamma
+        self.rng = np.random.default_rng()
 
-    @classmethod
-    def initialize_node(cls, node: MCTSNode, b: Board) -> None:
+    def initialize_node(self, node: MCTSNode, b: Board) -> None:
         length = len(b.moves)
         node.p = np.ones(length)/length
         node.mu_hat = np.ones(length)/length
 
-    @classmethod
-    def update_node(cls, node: MCTSNode,
+    def update_node(self, node: MCTSNode,
                     board: Board,
-                    score: Iterable[int]) -> None:
+                    score: int) -> None:
         
         node.n += 1
-        node.r = [node.r[0] + score[0], node.r[1] + score[1]]
+        node.r = node.r + score
 
         # Here n' is incremented for all children, it should be 
         # siblings according to Cowling et al. (2012).
@@ -39,11 +40,10 @@ class Bandit:
     @classmethod
     def choose_arm(cls, v: MCTSNode,
                    b: Board) -> MCTSNode:
-        # Sample from the distribution p
-        return cls.rng.choice(v.children, p=v.p)
+        # Sample from the distribution p, regardles of what kind of node.
+        return self.rng.choice(v.children, p=v.p)
 
-    @classmethod
-    def UCB1(cls, v: MCTSNode, b: Board) -> float:
+    def UCB1(self, v: MCTSNode, b: Board) -> float:
         k: Final[float] = 0.75
         return v.reward(b)/v.n+k*sqrt(log(v.n_accent)/v.n)
 
@@ -64,32 +64,33 @@ class CBT1:
 
         if not gamma:
             gamma = sqrt(2*K*iter/cls.regression_regret(iter))
+        bandit = Bandit(nu, gamma)
         
         root = MCTSNode()
-        Bandit.initialize_node(root, board)
+        bandit.initialize_node(root, board)
         
         for i in range(iter):
-            v = cls.select(root, board, levels)
+            v = cls.select(bandit, root, board, levels)
 
             if len(cls.missing_moves(v, board)) > 0:
-                v = cls.expand(v, board)
+                v = cls.expand(bandit, v, board)
 
             res = cls.simulate(v, board)
-            cls.backpropagate(v, board, res)
+            cls.backpropagate(bandit, v, board, res)
             
         best_child = max(root.children, key=lambda child: child.n)
         return best_child.prev_move
 
     @classmethod
-    def select(cls, v: MCTSNode, b: Board, levels: int) -> MCTSNode:
+    def select(cls, bandit: Bandit, v: MCTSNode, b: Board, levels: int) -> MCTSNode:
         while not b.finished and len(cls.missing_moves(v, b)) == 0 and v.depth < levels:
-            v = Bandit.choose_arm(v, b)
+            v = bandit.choose_arm(v, b)
             b.update(v.prev_move)
 
         return v
     
     @classmethod
-    def expand(cls, v: MCTSNode, b: Board) -> MCTSNode:
+    def expand(cls, bandit: Bandit, v: MCTSNode, b: Board) -> MCTSNode:
         moves: list[int] = list(cls.missing_moves(v,b))
 
         #TODO: Change this to adding all children at once.
@@ -109,34 +110,34 @@ class CBT1:
         v = v.add_child(new_move)
 
         b.update(v.prev_move)
+        bandit.initialize_node(v,b)
 
         return v
     
     # Update visitations and scores in the entire tree
     @classmethod
-    def backpropagate(cls, v: MCTSNode, b: Board, score: list[int]) -> None:
+    def backpropagate(cls, bandit: Bandit, v: MCTSNode, b: Board, score: int) -> None:
         node: MCTSNode | None = v
         while node:
-            Bandit.update_node(node, b, score)
+            bandit.update_node(node, b, score)
 
             if (node.parent != None):
                 b.undo(node.prev_move)
 
             node = node.parent
-
     
     # Simulate the rest of this determinization and return the end score.
     @classmethod
-    def simulate(cls, v: MCTSNode, b: Board) -> list[int]:
+    def simulate(cls, v: MCTSNode, b: Board) -> int:
         board: Board = copy.deepcopy(b)
         while not board.finished:
             moves: list[int] = list(board.moves)
             next: int = random.choice(moves)
             board.update(next)
         
-        scores = board.points
+        score = board.points
 
-        return scores 
+        return score
     
     @classmethod
     def missing_moves(cls, v: MCTSNode, b: Board) -> list[int]:

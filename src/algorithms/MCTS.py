@@ -16,7 +16,7 @@ class Board(Protocol):
         pass
 
     @property
-    def points(self) -> list[int]:
+    def points(self) -> int:
         pass
 
     def update(self, place: int) -> bool:
@@ -31,7 +31,7 @@ class MCTSNode:
     children: list[MCTSNode]
     prev_move: int
     n_accent: int
-    r: list[int]
+    r: int
     depth: int
 
     def __init__(self, parent: MCTSNode | None = None):
@@ -39,7 +39,7 @@ class MCTSNode:
         self.n_accent = 0
         self.n = 0
         self.children = list()
-        self.r = [0,0]
+        self.r = 0
 
         self.depth = parent.depth+1 if parent else 0
 
@@ -58,9 +58,9 @@ class MCTSNode:
 
     def reward(self, b: Board) -> int:
         if b.prev_player == 0:
-            return self.r[0] - self.r[1]
+            return self.r
         else:
-            return self.r[1] - self.r[0]
+            return self.r
         
 
 class MCTS:
@@ -112,11 +112,11 @@ class MCTS:
     
     # Update visitations and scores in the entire tree
     @classmethod
-    def backpropagate(cls, v: MCTSNode, b: Board, score: list[int]) -> None:
+    def backpropagate(cls, v: MCTSNode, b: Board, score: int) -> None:
         node: MCTSNode | None = v
         while node:
             node.n += 1
-            node.r = [node.r[0] + score[0], node.r[1] + score[1]]
+            node.r = node.r + score
 
             # Here n' is incremented for all children, it should be 
             # siblings according to Cowling et al. (2012).
@@ -132,16 +132,16 @@ class MCTS:
     
     # Simulate the rest of this determinization and return the end score.
     @classmethod
-    def simulate(cls, v: MCTSNode, b: Board) -> list[int]:
+    def simulate(cls, v: MCTSNode, b: Board) -> int:
         board: Board = copy.deepcopy(b)
         while not board.finished:
             moves: list[int] = list(board.moves)
             next: int = random.choice(moves)
             board.update(next)
         
-        scores = board.points
+        score = board.points
 
-        return scores 
+        return score
     
     @classmethod
     def missing_moves(cls, v: MCTSNode, b: Board) -> list[int]:
