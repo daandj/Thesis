@@ -142,7 +142,9 @@ class HumanPlayer(Player):
         
 class MCTSPlayer(Player):
     def make_move(self, board: TicTacToeBoard) -> int:
-        move = MCTS.run(board)
+        alg = MCTS(board)
+        
+        move = alg.run()
         return move
     
 class CBT1Player(Player):
