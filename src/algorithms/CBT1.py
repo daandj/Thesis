@@ -14,10 +14,13 @@ class Bandit:
         self.rng = np.random.default_rng()
 
     def initialize_node(self, node: MCTSNode, b: Board) -> None:
+        
         length = len(b.moves)
         node.p = np.ones(length)/length
         node.mu_hat = np.ones(length)/length
         node.leaf = False
+        node.A_inv = np.identity(length)
+        node.b = np.zeros(length)
 
     def update_node(self, node: MCTSNode,
                     board: Board,
@@ -46,7 +49,7 @@ class Bandit:
             node.p = np.zeros(len(board.moves))
             node.p[idx] = 1
 
-            self.update_regression(node, board)
+            self.update_regression(node, board, score)
         elif node.depth == 0:
             pi = np.zeros(len(board.moves))
             for idx, child in enumerate(node.children):
@@ -82,11 +85,15 @@ class Bandit:
             print(f"There was an error at level {v.depth}")
             raise e
     
-    def update_regression(self, node: MCTSNode, board: Board) -> None:
-        node.mu_hat = np.zeros(len(board.moves))
-        for i, child in enumerate(node.children):
-            node.mu_hat[i] = child.r/child.n
+    def update_regression(self, node: MCTSNode,
+                          board: Board, score: float) -> None:
+        node.b = node.b + score * node.p
+        mul_x = np.dot(node.A_inv, node.p)
+        num = np.outer(mul_x, mul_x)
+        denom = 1+np.dot(node.p, mul_x)
+        node.A_inv = node.A_inv - num/denom
 
+        node.mu_hat = np.dot(node.b, node.A_inv)
 
 class CBT1:
     K: int

@@ -122,7 +122,7 @@ class HumanPlayer(Player):
     def make_move(self, board: TicTacToeBoard) -> int:
         print("\n\nHet bord is:")
 
-        board.print
+        board.print()
 
         print("")
         print("Kies uit een van de volgende vakjes:")

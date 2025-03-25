@@ -1,5 +1,4 @@
 from __future__ import annotations
-from collections.abc import Collection
 import copy
 from math import log, sqrt
 import random
@@ -92,14 +91,11 @@ class MCTS:
         def UCB1(v: MCTSNode) -> float:
             k: Final[float] = 0.75
             return v.reward(self.b)/v.n+k*sqrt(log(v.n_accent)/v.n)
-        
-        depth = 0
 
-        while not self.b.finished and len(self.missing_moves(v)) == 0 and depth < self.levels:
-            next: MCTSNode = max(v.children, key=lambda v: UCB1(v))
-            depth += 1
-            v = next
-            self.b.update(next.prev_move)
+        while not self.b.finished \
+            and len(self.missing_moves(v)) == 0 and v.depth < self.levels:
+            v = max(v.children, key=lambda v: UCB1(v))
+            self.b.update(v.prev_move)
         return v
     
     def expand(self, v: MCTSNode) -> MCTSNode:
