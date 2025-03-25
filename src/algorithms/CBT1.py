@@ -17,11 +17,13 @@ class Bandit:
         length = len(b.moves)
         node.p = np.ones(length)/length
         node.mu_hat = np.ones(length)/length
+        node.leaf = False
 
     def update_node(self, node: MCTSNode,
                     board: Board,
                     score: int) -> None:
-        
+        # The first lines (especially node.n) are used at other places,
+        # so we have to update, even with a leaf node.
         node.n += 1
         node.r = node.r + score
 
@@ -31,18 +33,30 @@ class Bandit:
         for child in node.children:
             child.n_accent += 1
 
+        if board.finished:
+            node.leaf = True
+            node.r = score
+            return
+
         # Calculate the new probility distribution over all actions
         if node.depth == 1 and node.children:
+            if node.leaf:
+                return
             idx, child = min(enumerate(node.children), key=lambda tup: self.UCB1(tup[1],board))
             node.p = np.zeros(len(board.moves))
             node.p[idx] = 1
 
-            self.update_avgs(node, board)
+            self.update_regression(node, board)
         elif node.depth == 0:
             pi = np.zeros(len(board.moves))
             for idx, child in enumerate(node.children):
-                pi[idx] = np.dot(child.p, child.mu_hat)
+                if child.leaf:
+                    # In this case we know for sure what the outcome will be,
+                    # no need for predictions.
+                    pi[idx] = child.r
+                    continue
 
+                pi[idx] = np.dot(child.p, child.mu_hat)
             j = np.argmax(pi)
             
             for idx, pi_i in enumerate(pi):
@@ -50,6 +64,7 @@ class Bandit:
                     continue
 
                 node.p[idx] = 1/(self.nu+self.gamma*(pi[j]-pi_i))
+
             node.p[j]=1+node.p[j]-np.sum(node.p)
 
     def choose_arm(self, v: MCTSNode,
@@ -59,9 +74,15 @@ class Bandit:
 
     def UCB1(self, v: MCTSNode, b: Board) -> float:
         k: Final[float] = 0.75
-        return v.r/v.n+k*sqrt(log(v.n_accent)/v.n)
+        if v.leaf:
+            return v.r
+        try:
+            return v.r/v.n+k*sqrt(log(v.n_accent)/v.n)
+        except (ValueError, ZeroDivisionError) as e:
+            print(f"There was an error at level {v.depth}")
+            raise e
     
-    def update_avgs(self, node: MCTSNode, board: Board) -> None:
+    def update_regression(self, node: MCTSNode, board: Board) -> None:
         node.mu_hat = np.zeros(len(board.moves))
         for i, child in enumerate(node.children):
             node.mu_hat[i] = child.r/child.n
@@ -85,7 +106,6 @@ class CBT1:
         self.b = board
 
     def run(self, iter: int = 1000) -> int:
-
         if not self.nu:
             self.nu = self.K
 
@@ -124,15 +144,6 @@ class CBT1:
         #TODO: Change this to adding all children at once.
         #UPDATE: This is hard, because those children aren't visited yet
         # which leads to a division by zero problem in de UCB1 calculation.
-        # for move in moves:
-        #     child = v.add_child(move)
-
-        #     b.update(child.prev_move)
-        #     Bandit.initialize_node(child,b)
-        #     b.undo(child.prev_move)
-
-        # v = random.choice(v.children)
-        # b.update(v.prev_move)
 
         new_move = random.choice(moves)
         v = v.add_child(new_move)

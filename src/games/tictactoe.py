@@ -26,7 +26,7 @@ class TicTacToeBoard():
     def __init__(self, size: int):
         self.size = size
         self.board = [[Move.empty for _ in range(size)] for _ in range(size)]
-        self.prev_player = 1
+        self.prev_player = 0
         self.winner = Move.empty.value
 
     def print(self) -> None:
@@ -98,9 +98,9 @@ class TicTacToeBoard():
         points: float = 0.0
 
         if self.winner == Move.O:
-            points = 1
-        elif self.winner == Move.X:
             points = -1
+        elif self.winner == Move.X:
+            points = 1
         else:
             points = 0.0
 
