@@ -21,11 +21,14 @@ def main() -> int:
     return 0
 
 def tictactoe() -> int:
-    game = ttt.TicTacToe(ttt.HumanPlayer(0), ttt.RandomPlayer(1))
-    game.set_board_size(4)
+    game = ttt.TicTacToe(ttt.CBT1Player(0),ttt.MCTSPlayer(1), print=False)
+    game.set_board_size(3)
     winner = game.play()
 
-    print(f"De winnaar is speler {winner+1}!")
+    if game.points == 0:
+        print(f"Er is helaas geen winnaar...")
+    else:
+        print(f"De winnaar is speler {winner+1}!")
     return 0
 
 if __name__ == '__main__':
