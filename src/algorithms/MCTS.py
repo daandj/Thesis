@@ -16,7 +16,7 @@ class Board(Protocol):
         pass
 
     @property
-    def points(self) -> int:
+    def points(self) -> float:
         pass
 
     def update(self, place: int) -> bool:
@@ -31,7 +31,7 @@ class MCTSNode:
     children: list[MCTSNode]
     prev_move: int
     n_accent: int
-    r: int
+    r: float
     depth: int
 
     def __init__(self, parent: MCTSNode | None = None):
@@ -56,7 +56,7 @@ class MCTSNode:
         self.parent = parent
         self.depth = self.parent.depth+1
 
-    def reward(self, b: Board) -> int:
+    def reward(self, b: Board) -> float:
         if b.prev_player == 0:
             return self.r
         else:
@@ -112,7 +112,7 @@ class MCTS:
     
     # Update visitations and scores in the entire tree
     @classmethod
-    def backpropagate(cls, v: MCTSNode, b: Board, score: int) -> None:
+    def backpropagate(cls, v: MCTSNode, b: Board, score: float) -> None:
         node: MCTSNode | None = v
         while node:
             node.n += 1
@@ -132,7 +132,7 @@ class MCTS:
     
     # Simulate the rest of this determinization and return the end score.
     @classmethod
-    def simulate(cls, v: MCTSNode, b: Board) -> int:
+    def simulate(cls, v: MCTSNode, b: Board) -> float:
         board: Board = copy.deepcopy(b)
         while not board.finished:
             moves: list[int] = list(board.moves)

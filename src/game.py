@@ -54,7 +54,7 @@ class Game(ABC):
 
     @property
     @abstractmethod
-    def points(self) -> int:
+    def points(self) -> float:
         raise NotImplementedError()
     
     @property

@@ -91,18 +91,18 @@ class TicTacToeBoard():
         return True
     
     @property
-    def points(self) -> int:
+    def points(self) -> float:
         if not self.finished:
             raise RuntimeError("No points before finishing the game")
         
-        points = 0
+        points: float = 0.0
 
         if self.winner == Move.O:
             points = 1
         elif self.winner == Move.X:
             points = -1
         else:
-            points = 0
+            points = 0.0
 
         return points
     
@@ -184,7 +184,7 @@ class TicTacToe(Game):
         return 1-starting_player
 
     @property
-    def points(self) -> int:
+    def points(self) -> float:
         return self.board.points
     
     @property
