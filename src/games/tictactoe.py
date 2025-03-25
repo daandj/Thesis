@@ -34,10 +34,7 @@ class TicTacToeBoard():
         for row in self.board:
             print("|",end="")
             for item in row:
-                if item == Move.empty:
-                    print(" ", end="")
-                else:
-                    print(str(item), end="")
+                print(str(Move(item)), end="")
                 print("|",end="")
             print("\n+"+"-+"*len(self.board))
 
@@ -159,8 +156,8 @@ class CBT1Player(Player):
 class TicTacToe(Game):
     board: TicTacToeBoard
 
-    def __init__(self, *players):
-        super().__init__(*players)
+    def __init__(self, *players, print: bool = False):
+        super().__init__(*players, print=print)
         self.set_board_size()
 
     def setup(self, *args) -> None:
@@ -170,7 +167,7 @@ class TicTacToe(Game):
         self.board = TicTacToeBoard(size)
     
     # Play one round of the game and then return the player whose turn it is next
-    def play_round(self, starting_player: int) -> int:
+    def play_round(self, starting_player: int, print: bool = False) -> int:
         tries = 10
         while (True):
             if tries <= 0:
@@ -181,7 +178,8 @@ class TicTacToe(Game):
             if self.board.update(move):
                 break
     
-        self.board.print()
+        if print:
+            self.board.print()
 
         return 1-starting_player
 

@@ -21,8 +21,8 @@ def main() -> int:
     return 0
 
 def tictactoe() -> int:
-    game = ttt.TicTacToe(ttt.CBT1Player(1),ttt.HumanPlayer(0))
-    game.set_board_size(3)
+    game = ttt.TicTacToe(ttt.CBT1Player(0),ttt.MCTSPlayer(1), print=True)
+    game.set_board_size(5)
     winner = game.play()
 
     if game.points == 0:

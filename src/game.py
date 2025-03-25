@@ -6,8 +6,9 @@ class Game(ABC):
     players: tuple[Player, ...]
 
     # Public methods
-    def __init__(self, *players: Player):
+    def __init__(self, *players: Player, print: bool = False):
         self.set_players(players)
+        self.print = print
 
     # For pretty printing using the std library print function
     def __str__(self):
@@ -37,7 +38,7 @@ class Game(ABC):
         self.setup(starting_player)
 
         while not self.finished:
-            starting_player = self.play_round(starting_player)
+            starting_player = self.play_round(starting_player, self.print)
 
         return self.winner
         
@@ -48,7 +49,7 @@ class Game(ABC):
     
     # Play one round of the game and then return the player whose turn it is next
     @abstractmethod
-    def play_round(self, starting_player: int) -> int:
+    def play_round(self, starting_player: int, print: bool = False) -> int:
         raise NotImplementedError()
 
     @property
