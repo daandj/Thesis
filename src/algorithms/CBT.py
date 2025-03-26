@@ -95,7 +95,7 @@ class Bandit:
 
         node.mu_hat = np.dot(node.b, node.A_inv)
 
-class CBT1:
+class CBT:
     K: int
     levels: int
     nu: float
