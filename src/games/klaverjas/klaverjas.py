@@ -54,7 +54,7 @@ class KlaverjasGame(Game):
 
     def play_round(self, starting_player: int) -> int:
         trick = Trick()
-        for j in range(4):
+        for j in range(self.num_players):
             self.players[(starting_player + j) % 4].make_move(self.state_reader, trick)
 
         normalized_trick = Trick.rotate(trick, starting_player)

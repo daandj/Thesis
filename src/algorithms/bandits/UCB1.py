@@ -1,6 +1,6 @@
 from collections.abc import Iterable
 from math import log, sqrt
-from typing import Final
+from typing import Final, Iterable
 from algorithms.ISMCTS.determinization import Determinization
 from algorithms.bandits import bandit
 
