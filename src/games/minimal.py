@@ -5,113 +5,77 @@ from game import Game
 from player import Player
 
 class HumanPlayer(Player):
-    def make_move(self, board: MinimalBoard) -> int:
+    def make_move(self, moves: list[int]) -> int:
         while (True):
-            input_str: str = input(f"Kies een getal tussen 0 en {len(board.moves)}: ")
+            input_str: str = input(f"Kies een getal tussen 0 en {len(moves)}: ")
             if (not input_str.isdigit()
-                or int(input_str) not in board.moves
+                or int(input_str) not in moves
                 or int(input_str) < 0):
                 
                 print("Dat is niet een geldige keuze... Probeer het opnieuw.")
                 continue
 
             return int(input_str)
-        
-class MinimalBoard:
-    means: np.ndarray
-    winner: int | None
-    choices: list[int | None]
-    player: int
-    rng: np.random.Generator = np.random.default_rng()
-
-    def __init__(self, shape: tuple[int, int] = (5, 5)):
-        self.winner = 0
-        self.means = np.random.random_sample(shape)
-        self.player = 0
-        self.choices = [None, None]
-
-    @property
-    def moves(self) -> list[int]:
-        return list(range(self.means.shape[self.player]))
-    
-    @property
-    def finished(self) -> bool:
-        if any(move == None for move in self.choices):
-            return False
-        # TODO: Test that is only done once
-        self.outcome = self.rng.binomial(1, self.means[tuple(self.choices)]) # type: ignore
-        return True
-    
-    def update(self, place: int) -> bool:
-        if self.choices[self.player] != None:
-            return False
-        if place not in self.moves:
-            return False
-        
-        self.choices[self.player] = place
-
-        self.player = 1 - self.player
-
-        return True
-    
-    @property
-    def points(self) -> float:
-        if not self.finished or self.winner == None:
-            raise RuntimeError("No points before finishing the game")
-
-        return float(self.winner)
-    
-    def undo(self, place: int) -> None:
-        self.winner = None
-        self.player = 1 - self.player
-        self.choices[self.player] = None
-
-    def print(self) -> None:
-        for idx, move in enumerate(self.moves):
-            if move:
-                print(f"Player {idx} chose arm {move}")
-        
-        print("")
-
-    def print_means(self) -> None:
-        with np.printoptions(precision=2, suppress=True):
-            print(self.means)
 
 class Minimal(Game):
-    board: MinimalBoard
+    means: np.ndarray
+    rng: np.random.Generator = np.random.default_rng()
+    choices: list[int | None]
+    score: int | None
 
-    def __init__(self, *players: Player, print = False, shape: tuple[int, int] = (5,5)):
+    def __init__(self, *players: Player, print = False, means: np.ndarray):
         super().__init__(*players, print=print)
-        self.board = MinimalBoard(shape)
+        self.means = means
+        self.choices = [None, None]
+        self.score = None
+
         if print:
-            self.board.print_means()
+            self.print_means()
 
     def setup(self, *args) -> None:
         pass
-
-    def reshape(self, shape: tuple[int, int]) -> None:
-        self.board = MinimalBoard(shape)
     
     # Play one round of the game and then return the player whose turn it is next
     def play_round(self, player: int, print_flag: bool = False) -> int:
-        tries = 10
-        while (True):
-            if tries <= 0:
-                raise RuntimeError("To many illegal moves tried")
-            tries -= 1
-
-            move = self.players[player].make_move(self.board)
-            if self.board.update(move):
-                break
+        move0 = self.players[0].make_move(self.moves(0))
+        if not self.update(0, move0):
+            raise RuntimeError()
+        
+        move1 = self.players[1].make_move(self.moves(1))
+        if not self.update(1, move1):
+            raise RuntimeError()
     
         if print_flag:
-            self.board.print()
+            self.print_moves()
 
-        return 1-player
+        return player
+    
+    def update(self, player: int, place: int) -> bool:
+        if self.choices[player] != None:
+            return False
+        if place not in self.moves(player):
+            return False
+        
+        self.choices[player] = place
+
+        return True
+    
+    def undo(self, player: int) -> None:
+        self.choices[player] = None
 
     @property
     def points(self) -> float:
-        return self.board.points
+        if not self.finished:
+            raise RuntimeError("No points before finishing the game")
+        
+        if self.score == None:
+            new_score: int = self.rng.binomial(1, self.means[tuple(self.choices)]) # type: ignore
+            self.score = new_score
+
+        return self.score
+
+    def moves(self, player: int) -> list[int]:
+        return list(range(self.means.shape[player]))
     
     @property
     def name(self) -> str:
@@ -123,8 +87,19 @@ class Minimal(Game):
     
     @property
     def finished(self) -> bool:
-        return self.board.finished
+        return all(move != None for move in self.choices)
         
     @property
     def winner(self) -> int:
-        return int(self.board.points)
+        return 1-int(self.points)
+
+    def print_moves(self) -> None:
+        for idx, move in enumerate(self.choices):
+            if move != None:
+                print(f"Player {idx} chose arm {move}")
+        
+        print("")
+    
+    def print_means(self) -> None:
+        with np.printoptions(precision=2, suppress=True):
+            print(self.means)

@@ -1,4 +1,6 @@
 import sys
+
+import numpy as np
 import games.minimal as min
 import games.tictactoe as ttt
 
@@ -14,10 +16,13 @@ def main() -> int:
     return 0
 
 def minimal() -> int:
-    game = min.Minimal(min.HumanPlayer(0), min.HumanPlayer(1), print = True)
+    means = np.random.random_sample((5,5))
+    game = min.Minimal(min.HumanPlayer(0),
+                       min.HumanPlayer(1),
+                       print = True, means = means)
     game.play()
 
-    print(f"The outcome is {game.points}")
+    print(f"The outcome is {game.points} and winner is player {game.winner}")
     return 0
 
 if __name__ == '__main__':
