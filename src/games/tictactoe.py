@@ -37,6 +37,8 @@ class TicTacToeBoard():
                 print(str(Move(item)), end="")
                 print("|",end="")
             print("\n+"+"-+"*len(self.board))
+        
+        print("")
 
     @property
     def moves(self) -> list[int]:
