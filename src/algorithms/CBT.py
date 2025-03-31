@@ -14,7 +14,7 @@ class Bandit:
         self.rng = np.random.default_rng()
 
     def initialize_node(self, node: MCTSNode, b: Board) -> None:
-        
+
         length = len(b.moves)
         node.p = np.ones(length)/length
         node.mu_hat = np.ones(length)/length
@@ -30,7 +30,7 @@ class Bandit:
         node.n += 1
         node.r = node.r + score
 
-        # Here n' is incremented for all children, it should be 
+        # Here n' is incremented for all children, it should be
         # siblings according to Cowling et al. (2012).
         # TODO: Check that that makes a difference
         for child in node.children:
@@ -61,7 +61,7 @@ class Bandit:
 
                 pi[idx] = np.dot(child.p, child.mu_hat)
             j = np.argmax(pi)
-            
+
             for idx, pi_i in enumerate(pi):
                 if idx == j:
                     continue
@@ -71,11 +71,11 @@ class Bandit:
             node.p[j]=1+node.p[j]-np.sum(node.p)
 
     def choose_arm(self, v: MCTSNode,
-                   b: Board) -> MCTSNode:
+                   _: Board) -> MCTSNode:
         # Sample from the distribution p, regardles of what kind of node.
         return self.rng.choice(v.children, p=v.p)
 
-    def UCB1(self, v: MCTSNode, b: Board) -> float:
+    def UCB1(self, v: MCTSNode, _: Board) -> float:
         k: Final[float] = 0.75
         if v.leaf:
             return v.r
@@ -84,9 +84,9 @@ class Bandit:
         except (ValueError, ZeroDivisionError) as e:
             print(f"There was an error at level {v.depth}")
             raise e
-    
+
     def update_regression(self, node: MCTSNode,
-                          board: Board, score: float) -> None:
+                          _: Board, score: float) -> None:
         node.b = node.b + score * node.p
         mul_x = np.dot(node.A_inv, node.p)
         num = np.outer(mul_x, mul_x)
@@ -112,20 +112,20 @@ class CBT:
         self.gamma = gamma
         self.b = board
 
-    def run(self, iter: int = 10000) -> int:
+    def run(self, iters: int = 10000) -> int:
         if not self.nu:
             self.nu = self.K
 
         if not self.gamma:
             self.gamma = sqrt(
-                2*self.K*iter/self.regression_regret(iter)
+                2*self.K*iters/self.regression_regret(iters)
             )
         bandit = Bandit(self.nu, self.gamma)
-        
+
         root = MCTSNode()
         bandit.initialize_node(root, self.b)
-        
-        for i in range(iter):
+
+        for _ in range(iters):
             v = self.select(bandit, root)
 
             if len(self.missing_moves(v)) > 0:
@@ -133,7 +133,7 @@ class CBT:
 
             res = self.simulate()
             self.backpropagate(bandit, v, res)
-            
+
         best_child = max(root.children, key=lambda child: child.n)
         return best_child.prev_move
 
@@ -144,7 +144,7 @@ class CBT:
             self.b.update(v.prev_move)
 
         return v
-    
+
     def expand(self, bandit: Bandit, v: MCTSNode) -> MCTSNode:
         moves: list[int] = list(self.missing_moves(v))
 
@@ -159,33 +159,33 @@ class CBT:
         bandit.initialize_node(v,self.b)
 
         return v
-    
+
     # Update visitations and scores in the entire tree
     def backpropagate(self, bandit: Bandit, v: MCTSNode, score: int) -> None:
         node: MCTSNode | None = v
         while node:
             bandit.update_node(node, self.b, score)
 
-            if (node.parent != None):
+            if node.parent is not None:
                 self.b.undo(node.prev_move)
 
             node = node.parent
-    
+
     # Simulate the rest of this determinization and return the end score.
     def simulate(self) -> int:
         board: Board = copy.deepcopy(self.b)
         while not board.finished:
             moves: list[int] = list(board.moves)
-            next: int = random.choice(moves)
-            board.update(next)
-        
+            next_move: int = random.choice(moves)
+            board.update(next_move)
+
         score = board.points
 
         return score
-    
+
     def missing_moves(self, v: MCTSNode) -> list[int]:
         res = set(self.b.moves).difference(map(lambda child: child.prev_move, v.children))
         return list(res)
-    
+
     def regression_regret(self, t: int) -> float:
         return sqrt(t) # TODO: This, but correct.
