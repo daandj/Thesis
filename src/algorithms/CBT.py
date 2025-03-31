@@ -1,11 +1,11 @@
-from collections.abc import Iterable
 import copy
 from math import sqrt, log
 import random
 from typing import Final
-
 import numpy as np
 from algorithms.MCTS import Board, MCTSNode
+
+# CBT class tries to maximise the outcome
 
 class Bandit:
     def __init__(self, nu: int, gamma: float) -> None:
@@ -95,7 +95,7 @@ class Bandit:
 
         node.mu_hat = np.dot(node.b, node.A_inv)
 
-class CBT1:
+class CBT:
     K: int
     levels: int
     nu: float
@@ -112,7 +112,7 @@ class CBT1:
         self.gamma = gamma
         self.b = board
 
-    def run(self, iter: int = 1000) -> int:
+    def run(self, iter: int = 10000) -> int:
         if not self.nu:
             self.nu = self.K
 

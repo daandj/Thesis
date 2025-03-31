@@ -2,7 +2,7 @@ from enum import IntEnum
 from functools import reduce
 from operator import add
 import random
-from algorithms.CBT1 import CBT1
+from algorithms.CBT import CBT
 from algorithms.MCTS import MCTS
 from game import Game
 from player import Player
@@ -37,6 +37,8 @@ class TicTacToeBoard():
                 print(str(Move(item)), end="")
                 print("|",end="")
             print("\n+"+"-+"*len(self.board))
+        
+        print("")
 
     @property
     def moves(self) -> list[int]:
@@ -147,9 +149,9 @@ class MCTSPlayer(Player):
         move = alg.run()
         return move
     
-class CBT1Player(Player):
+class CBTPlayer(Player):
     def make_move(self, board: TicTacToeBoard) -> int:
-        alg = CBT1(board)
+        alg = CBT(board)
         
         move = alg.run()
         return move 
