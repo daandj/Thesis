@@ -74,7 +74,7 @@ class TicTacToeBoard():
                 self.winner = player.value
                 return True
 
-        if all([Move.EMPTY not in row for row in self.board]):
+        if all(Move.EMPTY not in row for row in self.board):
             self.winner = -1
             return True
         return False
