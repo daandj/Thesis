@@ -17,9 +17,9 @@ def main() -> int:
 
 def minimal() -> int:
     means = np.random.random_sample((5,5))
-    game = min.Minimal(min.HumanPlayer(0),
+    game = min.Minimal(min.CBTPlayer(0),
                        min.HumanPlayer(1),
-                       print = True, means = means)
+                       print=True, means=means)
     game.play()
 
     print(f"The outcome is {game.points} and winner is player {game.winner}")
