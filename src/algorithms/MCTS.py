@@ -5,11 +5,11 @@ import random
 from typing import Final, Protocol
 
 class Board(Protocol):
-    prev_player: int 
+    prev_player: int
     @property
     def finished(self) -> bool:
         pass
-    
+
     @property
     def moves(self) -> list[int]:
         pass
@@ -23,7 +23,7 @@ class Board(Protocol):
 
     def undo(self, place: int) -> None:
         pass
-    
+
 class MCTSNode:
     n: int
     parent: MCTSNode | None
@@ -37,7 +37,7 @@ class MCTSNode:
         self.parent = parent
         self.n_accent = 0
         self.n = 0
-        self.children = list()
+        self.children = []
         self.r = 0
 
         self.depth = parent.depth+1 if parent else 0
@@ -47,20 +47,20 @@ class MCTSNode:
         child.prev_move = move
         self.children.append(child)
         return child
-    
+
     def add_parent(self, parent: MCTSNode) -> None:
         if self.parent:
             raise RuntimeError("Node already has a parent")
-        
+
         self.parent = parent
         self.depth = self.parent.depth+1
 
     def reward(self, b: Board) -> float:
         if b.prev_player == 0:
             return self.r
-        else:
-            return -self.r
-        
+
+        return -self.r
+
 
 class MCTS:
     levels: int
@@ -71,11 +71,11 @@ class MCTS:
         self.levels = levels
         self.b = board
 
-    def run(self, iter: int = 1000) -> int:
-        
+    def run(self, iters: int = 1000) -> int:
+
         root = MCTSNode()
-        
-        for i in range(iter):
+
+        for _ in range(iters):
             v = self.select(root)
 
             if len(self.missing_moves(v)) > 0:
@@ -83,7 +83,7 @@ class MCTS:
 
             res = self.simulate()
             self.backpropagate(v, res)
-            
+
         best_child = max(root.children, key=lambda child: child.n)
         return best_child.prev_move
 
@@ -94,10 +94,10 @@ class MCTS:
 
         while not self.b.finished \
             and len(self.missing_moves(v)) == 0 and v.depth < self.levels:
-            v = max(v.children, key=lambda v: UCB1(v))
+            v = max(v.children, key=UCB1)
             self.b.update(v.prev_move)
         return v
-    
+
     def expand(self, v: MCTSNode) -> MCTSNode:
         moves: list[int] = list(self.missing_moves(v))
 
@@ -106,7 +106,7 @@ class MCTS:
 
         self.b.update(v.prev_move)
         return v
-    
+
     # Update visitations and scores in the entire tree
     def backpropagate(self, v: MCTSNode, score: float) -> None:
         node: MCTSNode | None = v
@@ -114,30 +114,30 @@ class MCTS:
             node.n += 1
             node.r = node.r + score
 
-            # Here n' is incremented for all children, it should be 
+            # Here n' is incremented for all children, it should be
             # siblings according to Cowling et al. (2012).
             # TODO: Check that that makes a difference
             for child in node.children:
                 child.n_accent += 1
 
-            if (node.parent != None):
+            if node.parent is not None:
                 self.b.undo(node.prev_move)
 
             node = node.parent
 
-    
+
     # Simulate the rest of this determinization and return the end score.
     def simulate(self) -> float:
         board: Board = copy.deepcopy(self.b)
         while not board.finished:
             moves: list[int] = list(board.moves)
-            next: int = random.choice(moves)
-            board.update(next)
-        
+            next_move: int = random.choice(moves)
+            board.update(next_move)
+
         score = board.points
 
         return score
-    
+
     def missing_moves(self, v: MCTSNode) -> list[int]:
         res = set(self.b.moves).difference(map(lambda child: child.prev_move, v.children))
         return list(res)
