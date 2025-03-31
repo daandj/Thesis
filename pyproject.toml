@@ -6,4 +6,5 @@ disable = [
     "fixme",
     "invalid-name",
     "too-few-public-methods",
+    "duplicate-code",
 ]
