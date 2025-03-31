@@ -5,11 +5,11 @@ from game import Game
 from player import Player
 
 class HumanPlayer(Player):
-    def make_move(self, moves: list[int]) -> int:
+    def make_move(self, board: list[int]) -> int:
         while True:
-            input_str: str = input(f"Kies een getal tussen 0 en {len(moves)}: ")
+            input_str: str = input(f"Kies een getal tussen 0 en {len(board)}: ")
             if (not input_str.isdigit()
-                or int(input_str) not in moves
+                or int(input_str) not in board
                 or int(input_str) < 0):
 
                 print("Dat is niet een geldige keuze... Probeer het opnieuw.")
@@ -18,11 +18,10 @@ class HumanPlayer(Player):
             return int(input_str)
 
 class CBTPlayer(Player):
-    def make_move(self, moves: list[int]) -> int:
+    def make_move(self, board: list[int]) -> int:
         # Placeholder for the actual CBT algorithm
         # In a real implementation, this would use the CBT algorithm to select a move
-        return moves[0]
-
+        return board[0]
 
 class Minimal(Game):
     means: np.ndarray

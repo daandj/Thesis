@@ -37,7 +37,7 @@ class MCTSNode:
         self.parent = parent
         self.n_accent = 0
         self.n = 0
-        self.children = list()
+        self.children = []
         self.r = 0
 
         self.depth = parent.depth+1 if parent else 0
@@ -58,8 +58,8 @@ class MCTSNode:
     def reward(self, b: Board) -> float:
         if b.prev_player == 0:
             return self.r
-        else:
-            return -self.r
+
+        return -self.r
 
 
 class MCTS:

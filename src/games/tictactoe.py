@@ -120,7 +120,6 @@ class RandomPlayer(Player):
         return random.choice(board.moves)
 
 class HumanPlayer(Player):
-
     def make_move(self, board: TicTacToeBoard) -> int:
         print("\n\nHet bord is:")
 
