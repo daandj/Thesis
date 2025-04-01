@@ -116,24 +116,27 @@ class TicTacToeBoard():
         self.prev_player = (self.prev_player + 1) % 2
 
 class RandomPlayer(Player):
-    def make_move(self, board: TicTacToeBoard) -> int:
-        return random.choice(board.moves)
+    def make_move(self, game: Game) -> int:
+        return random.choice(game.moves)
 
 class HumanPlayer(Player):
-    def make_move(self, board: TicTacToeBoard) -> int:
+    def make_move(self, game: Game) -> int:
+        if not isinstance(game, TicTacToe):
+            raise RuntimeError("This player is only for TicTacToe")
+
         print("\n\nHet bord is:")
 
-        board.print()
+        game.board.print()
 
         print("")
         print("Kies uit een van de volgende vakjes:")
-        TicTacToe.print_empty_board(board.size)
+        TicTacToe.print_empty_board(game.board.size)
         print("")
         while True:
             input_str: str = input("Kies een vakje "
-                                    f"(0-{board.size*board.size-1}): ")
+                                    f"(0-{len(game.moves)-1}): ")
             if (not input_str.isdigit()
-                or int(input_str) >= board.size*board.size
+                or int(input_str) >= len(game.moves)
                 or int(input_str) < 0):
 
                 print("Dat is niet een geldige keuze... Probeer het opnieuw.")
@@ -142,15 +145,21 @@ class HumanPlayer(Player):
             return int(input_str)
 
 class MCTSPlayer(Player):
-    def make_move(self, board: TicTacToeBoard) -> int:
-        alg = MCTS(board)
+    def make_move(self, game: Game) -> int:
+        if not isinstance(game, TicTacToe):
+            raise RuntimeError("This player is only for TicTacToe")
+
+        alg = MCTS(game.board)
 
         move = alg.run()
         return move
 
 class CBTPlayer(Player):
-    def make_move(self, board: TicTacToeBoard) -> int:
-        alg = CBT(board)
+    def make_move(self, game: Game) -> int:
+        if not isinstance(game, TicTacToe):
+            raise RuntimeError("This player is only for TicTacToe")
+
+        alg = CBT(game.board)
 
         move = alg.run()
         return move
@@ -162,9 +171,10 @@ class TicTacToe(Game):
     """
     board: TicTacToeBoard
 
-    def __init__(self, *players, print_flag: bool = False):
-        super().__init__(*players, print_flag=print_flag)
+    def __init__(self, print_flag: bool = False):
+        super().__init__(print_flag=print_flag)
         self.set_board_size()
+        self.player = 0
 
     def setup(self, *args) -> None:
         pass
@@ -172,24 +182,22 @@ class TicTacToe(Game):
     def set_board_size(self, size: int = 3) -> None:
         self.board = TicTacToeBoard(size)
 
-    def play_round(self, starting_player: int, print_flag: bool = False) -> int:
-        """
-        Play one round of the game and return the player whose turn it is next
-        """
-        tries = 10
-        while True:
-            if tries <= 0:
-                raise RuntimeError("To many illegal moves tried")
-            tries -= 1
+    def do(self, move: int) -> int:
+        if not self.board.update(move):
+            raise RuntimeError("Illegal move")
 
-            move = self.players[starting_player].make_move(self.board)
-            if self.board.update(move):
-                break
-
-        if print_flag:
+        if self.print_flag:
             self.board.print()
 
-        return 1-starting_player
+        self.player = 1-self.player
+        return self.player
+
+    def undo(self) -> int:
+        #TODO: Somehow find out what the previous move was
+        # and undo that one.
+        self.board.undo(self.board.moves[-1])
+        self.player = 1-self.player
+        return self.player
 
     @property
     def points(self) -> float:
