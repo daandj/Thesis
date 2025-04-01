@@ -8,7 +8,9 @@ from player import Player
 
 class GameManager:
     """
-    Class for running a game. It takes the player algorithms and a game, and
+    Class for running a game.
+
+    Takes the player algorithms and a game, and
     handles the communication between each part.
     """
     players: tuple[Player, ...]
@@ -87,8 +89,7 @@ class GameManager:
         self.game.reset()
 
         while not self.game.finished:
-            #TODO: replace the [5,5] on the next line with something.
-            new_move = self.players[next_player].make_move([5,5])
+            new_move = self.players[next_player].make_move(self.game)
 
             if self.print_flag:
                 print(f"Player {next_player} chose arm {new_move}")

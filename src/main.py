@@ -3,7 +3,7 @@ import sys
 import numpy as np
 from gamemanager import GameManager
 import games.minimal as mg
-import games.tictactoe as ttt
+# import games.tictactoe as ttt
 
 def main() -> int:
     raise NotImplementedError("This function is not implemented yet.")
@@ -19,10 +19,9 @@ def main() -> int:
 
 def minimal() -> int:
     means = np.random.random_sample((5,5))
-    player0 = mg.HumanPlayer(0)
-    player1 = mg.HumanPlayer(1)
-    game = mg.Minimal(player0, player1, print_flag=True, means=means)
-    gm = GameManager(game, player0, player1)
+    game = mg.Minimal(print_flag=True, means=means)
+    gm = GameManager(game, mg.CBTMinimalPlayer(0), mg.HumanPlayer(1),
+                     print_flag=True, data_flag=False)
     winner = gm.play()
 
     print(f"The outcome is {gm.points} and winner is player {winner}")

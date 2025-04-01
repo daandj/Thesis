@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import numpy as np
+from algorithms.minimal_CBT import CBTMinimal
 from game import Game
 from player import Player
 
@@ -17,11 +18,16 @@ class HumanPlayer(Player):
 
             return int(input_str)
 
-class CBTPlayer(Player):
-    def make_move(self, board: list[int]) -> int:
-        # Placeholder for the actual CBT algorithm
-        # In a real implementation, this would use the CBT algorithm to select a move
-        return board[0]
+class CBTMinimalPlayer(Player):
+    def __init__(self, location):
+        super().__init__(location)
+        if location != 0:
+            raise ValueError("CBTMinimalPlayer can only be used for player 0")
+
+    def make_move(self, game: Game, data_flag: bool = False) -> int:
+        alg = CBTMinimal(game, data_flag=data_flag)
+        move = alg.run()
+        return move
 
 class Minimal(Game):
     means: np.ndarray
