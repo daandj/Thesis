@@ -1,4 +1,6 @@
-from abc import ABC
+from abc import ABC, abstractmethod
+
+from game import Game
 
 
 class Player(ABC):
@@ -7,5 +9,6 @@ class Player(ABC):
     def __init__(self, location: int):
         self.loc = location
 
-    def make_move(self, board):
-        pass
+    @abstractmethod
+    def make_move(self, game: Game) -> int:
+        raise NotImplementedError()
