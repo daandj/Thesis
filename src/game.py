@@ -56,6 +56,13 @@ class Game(ABC):
     def play_round(self, starting_player: int) -> int:
         raise NotImplementedError()
 
+    @abstractmethod
+    def do(self, move: int) -> int:
+        """
+        Play the move on the board and return the next player.
+        """
+        raise NotImplementedError()
+
     @property
     @abstractmethod
     def points(self) -> float:
@@ -79,4 +86,11 @@ class Game(ABC):
     @property
     @abstractmethod
     def winner(self) -> int:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def reset(self) -> None:
+        """
+        Reset the game state to its initial state.
+        """
         raise NotImplementedError()
