@@ -77,8 +77,8 @@ class GameManager:
         """
         Run the game until it finishes.
 
-        Asks the next players algorithm to choose a move and then updates the
-        game state, until the game is finished.
+        Ask the next players algorithm to choose a move and then update the
+        game state, and repeat this until the game is finished.
 
         Returns:
             int: The index of the winning player.
@@ -87,7 +87,12 @@ class GameManager:
         self.game.reset()
 
         while not self.game.finished:
-            new_move = self.players[next_player].make_move(self.game)
+            #TODO: replace the [5,5] on the next line with something.
+            new_move = self.players[next_player].make_move([5,5])
+
+            if self.print_flag:
+                print(f"Player {next_player} chose arm {new_move}")
+
             next_player = self.game.do(new_move)
 
         return self.game.winner

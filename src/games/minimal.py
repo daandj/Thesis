@@ -7,9 +7,9 @@ from player import Player
 class HumanPlayer(Player):
     def make_move(self, board: list[int]) -> int:
         while True:
-            input_str: str = input(f"Kies een getal tussen 0 en {len(board)}: ")
+            input_str: str = input(f"Kies een getal tussen 0 en {board[self.loc]-1}: ")
             if (not input_str.isdigit()
-                or int(input_str) not in board
+                or int(input_str) > board[self.loc]-1
                 or int(input_str) < 0):
 
                 print("Dat is niet een geldige keuze... Probeer het opnieuw.")
@@ -29,11 +29,12 @@ class Minimal(Game):
     choices: list[int | None]
     score: int | None
 
-    def __init__(self, *players: Player, print_flag = False, means: np.ndarray):
-        super().__init__(*players, print_flag=print_flag)
+    def __init__(self, means: np.ndarray, print_flag = False):
+        super().__init__(print_flag)
         self.means = means
         self.choices = [None, None]
         self.score = None
+        self.player = 0
 
         if self.print_flag:
             self.print_means()
@@ -41,37 +42,46 @@ class Minimal(Game):
     def setup(self, *args) -> None:
         pass
 
-    # Play one round of the game and then return the player whose turn it is next
-    def play_round(self, starting_player: int) -> int:
-        # Ensure both players make valid moves
-        move0 = self.players[0].make_move(self.moves(0))
-        if not self.update(0, move0):
-            raise ValueError(f"Player 0 made an invalid move: {move0}")
+    def do(self, move: int) -> int:
+        """
+        Play the next move.
 
-        if self.print_flag:
-            self.print_moves()
+        Validate the move, update the game state, and set the
+        `player` instance variable to index of the next player.
 
-        move1 = self.players[1].make_move(self.moves(1))
-        if not self.update(1, move1):
-            raise ValueError(f"Player 1 made an invalid move: {move1}")
+        Args:
+            move (int): The move to be played.
 
-        if self.print_flag:
-            self.print_moves()
+        Returns:
+            int: The index of the next player.
 
-        return starting_player
+        Raises:
+            ValueError: If the move is invalid, the game is finished or the
+                current player has already made a move.
+        """
+        if self.player >= len(self.choices):
+            raise ValueError("Game is already finished")
+        if self.choices[self.player] is not None:
+            raise ValueError("Player has already made a move")
+        if move not in self.moves(self.player):
+            raise ValueError(f"Invalid move: {move} for player {self.player}")
 
-    def update(self, player: int, place: int) -> bool:
-        # Ensure the move is valid and update the state
-        if self.choices[player] is not None:
-            return False
-        if place not in self.moves(player):
-            return False
+        self.choices[self.player] = move
+        self.player += 1
+        return self.player
 
-        self.choices[player] = place
-        return True
+    def undo(self) -> int:
+        self.player -= 1
+        if self.player < 0:
+            raise ValueError("No moves to undo")
 
-    def undo(self, player: int) -> None:
-        self.choices[player] = None
+        self.choices[self.player] = None
+        return self.player
+
+    def reset(self) -> None:
+        self.choices = [None, None]
+        self.player = 0
+        self.score = None
 
     @property
     def points(self) -> float:
@@ -109,12 +119,6 @@ class Minimal(Game):
     def winner(self) -> int:
         return 1-int(self.points)
 
-    def print_moves(self) -> None:
-        for idx, move in enumerate(self.choices):
-            if move is not None:
-                print(f"Player {idx} chose arm {move}")
-
-        print("")
 
     def print_means(self) -> None:
         with np.printoptions(precision=2, suppress=True):
