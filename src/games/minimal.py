@@ -5,11 +5,11 @@ from game import Game
 from player import Player
 
 class HumanPlayer(Player):
-    def make_move(self, board: list[int]) -> int:
+    def make_move(self, game: Game) -> int:
         while True:
-            input_str: str = input(f"Kies een getal tussen 0 en {board[self.loc]-1}: ")
+            input_str: str = input(f"Kies een getal tussen 0 en {len(game.moves)}: ")
             if (not input_str.isdigit()
-                or int(input_str) > board[self.loc]-1
+                or int(input_str) > len(game.moves)
                 or int(input_str) < 0):
 
                 print("Dat is niet een geldige keuze... Probeer het opnieuw.")
@@ -63,7 +63,7 @@ class Minimal(Game):
             raise ValueError("Game is already finished")
         if self.choices[self.player] is not None:
             raise ValueError("Player has already made a move")
-        if move not in self.moves(self.player):
+        if move not in self.moves:
             raise ValueError(f"Invalid move: {move} for player {self.player}")
 
         self.choices[self.player] = move
@@ -100,8 +100,9 @@ class Minimal(Game):
 
         return self.score
 
-    def moves(self, player: int) -> list[int]:
-        return list(range(self.means.shape[player]))
+    @property
+    def moves(self) -> list[int]:
+        return list(range(self.means.shape[self.player]))
 
     @property
     def name(self) -> str:
@@ -118,7 +119,6 @@ class Minimal(Game):
     @property
     def winner(self) -> int:
         return 1-int(self.points)
-
 
     def print_means(self) -> None:
         with np.printoptions(precision=2, suppress=True):

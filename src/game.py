@@ -20,9 +20,18 @@ class Game(ABC):
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def undo(self) -> int:
         """
         Undo the last move and return the player that made it.
+        """
+        raise NotImplementedError()
+
+    @property
+    @abstractmethod
+    def moves(self) -> list[int]:
+        """
+        Return the list of possible moves for the current player.
         """
         raise NotImplementedError()
 
