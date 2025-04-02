@@ -187,8 +187,7 @@ class CBTMinimal:
             self.backpropagate(v, res)
 
             if self.print_data:
-                print(f"Iteration {i}: {v.prev_move} -> {res}")
-                # TODO: Add make this more comprehensive
+                print(f"{i} {res}")
 
         # TODO: Think about what to return
         best_child = max(root.children, key=lambda child: child.n)

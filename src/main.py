@@ -20,8 +20,8 @@ def main() -> int:
 def minimal() -> int:
     means = np.random.random_sample((5,5))
     game = mg.Minimal(print_flag=True, means=means)
-    gm = GameManager(game, mg.CBTMinimalPlayer(0), mg.HumanPlayer(1),
-                     print_flag=True, data_flag=False)
+    gm = GameManager(game, mg.CBTMinimalPlayer(0, data_flag=True), mg.HumanPlayer(1),
+                     print_flag=True, data_flag=True)
     winner = gm.play()
 
     print(f"The outcome is {gm.points} and winner is player {winner}")

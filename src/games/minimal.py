@@ -19,8 +19,8 @@ class HumanPlayer(Player):
             return int(input_str)
 
 class CBTMinimalPlayer(Player):
-    def __init__(self, location):
-        super().__init__(location)
+    def __init__(self, location, data_flag: bool = False):
+        super().__init__(location, data_flag=data_flag)
         if location != 0:
             raise ValueError("CBTMinimalPlayer can only be used for player 0")
 
