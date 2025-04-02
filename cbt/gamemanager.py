@@ -3,8 +3,8 @@ This module defines the GameManager class.
 """
 
 from typing import final
-from game import Game
-from player import Player
+from cbt.game import Game
+from cbt.player import Player
 
 class GameManager:
     """

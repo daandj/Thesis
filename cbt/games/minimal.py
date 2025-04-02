@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import numpy as np
-from algorithms.minimal_CBT import CBTMinimal
-from game import Game
-from player import Player
+from cbt.algorithms.minimal_CBT import CBTMinimal
+from cbt.game import Game
+from cbt.player import Player
 
 class HumanPlayer(Player):
     def make_move(self, game: Game) -> int:

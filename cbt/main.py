@@ -1,8 +1,8 @@
 import sys
 
 import numpy as np
-from gamemanager import GameManager
-import games.minimal as mg
+from cbt.gamemanager import GameManager
+import cbt.games.minimal as mg
 # import games.tictactoe as ttt
 
 def main() -> int:

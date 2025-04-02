@@ -16,8 +16,10 @@ from math import sqrt, log
 import random
 from typing import Final
 import numpy as np
-from algorithms.MCTS import Board, MCTSNode
-from game import Game
+
+from cbt.algorithms.MCTS import Board, MCTSNode
+from cbt.game import Game
+
 
 class CBandit:
     """

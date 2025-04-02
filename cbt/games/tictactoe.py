@@ -2,10 +2,10 @@ from enum import IntEnum
 from functools import reduce
 from operator import add
 import random
-from algorithms.CBT import CBT
-from algorithms.MCTS import MCTS
-from game import Game
-from player import Player
+from cbt.algorithms.cbt_alg import CBT
+from cbt.algorithms.MCTS import MCTS
+from cbt.game import Game
+from cbt.player import Player
 
 class Move(IntEnum):
     EMPTY = -1
