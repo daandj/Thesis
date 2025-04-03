@@ -158,7 +158,7 @@ class CBTMinimal:
 
     def __init__(self, game: Game,
                  data_flag: bool = False) -> None:
-        self.K: Final[int] = len(game.moves)
+        self.K: int = len(game.moves)
         self.moves = game.moves
         self.game = game
         self.print_data = data_flag
