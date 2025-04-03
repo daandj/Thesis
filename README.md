@@ -12,7 +12,9 @@ cd Thesis
 
 Then activate the venv and build the package
 ```sh
+python -m venv .venv
 soure .venv/bin/activate
+pip install --upgrade pip
 pip install -e .
 ```
 
