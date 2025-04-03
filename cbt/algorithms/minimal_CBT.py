@@ -11,15 +11,52 @@ Classes:
     CBT: Implements the Contextual Bandit for Tree search (CBT) algorithm for maximizing outcomes.
 """
 
+from __future__ import annotations
 import copy
 from math import sqrt, log
 import random
 from typing import Final
 import numpy as np
+import numpy.typing as npt
 
-from cbt.algorithms.MCTS import Board, MCTSNode
 from cbt.game import Game
 
+class CBTNode:
+    n: int
+    parent: CBTNode | None
+    children: list[CBTNode]
+    prev_move: int
+    n_accent: int
+    r: float
+    depth: int
+    leaf: bool
+    p: npt.NDArray[np.float64]
+    b: npt.NDArray[np.float64]
+    mu_hat: npt.NDArray[np.float64]
+    A_inv: npt.NDArray[np.float64]
+
+
+    def __init__(self, parent: CBTNode | None = None):
+        self.parent = parent
+        self.n_accent = 0
+        self.n = 0
+        self.children = []
+        self.r = 0
+
+        self.depth = parent.depth+1 if parent else 0
+
+    def add_child(self, move: int) -> CBTNode:
+        child = CBTNode(self)
+        child.prev_move = move
+        self.children.append(child)
+        return child
+
+    def add_parent(self, parent: CBTNode) -> None:
+        if self.parent:
+            raise RuntimeError("Node already has a parent")
+
+        self.parent = parent
+        self.depth = self.parent.depth+1
 
 class CBandit:
     """
@@ -30,7 +67,7 @@ class CBandit:
         self.gamma = gamma
         self.rng = np.random.default_rng()
 
-    def initialize_node(self, node: MCTSNode, g: Game) -> None:
+    def initialize_node(self, node: CBTNode, g: Game) -> None:
         """
         Initialize the given node with uniform probabilities, identity matrix, and zero vectors.
         """
@@ -38,7 +75,7 @@ class CBandit:
         node.p = np.ones(length) / length
         node.leaf = False
 
-    def update_node(self, node: MCTSNode, game: Game, _: int) -> None:
+    def update_node(self, node: CBTNode, game: Game, _: int) -> None:
         """
         Update the statistics of the given node and its children based on the score.
         """
@@ -55,12 +92,12 @@ class CBandit:
             node.p[idx] = 1 / (self.nu + self.gamma * (pi[j] - pi_i))
         node.p[j] = 1 + node.p[j] - np.sum(node.p)
 
-    def choose_arm(self, v: MCTSNode) -> MCTSNode:
+    def choose_arm(self, v: CBTNode) -> CBTNode:
         """
         Sample a child node (arm) based on the probability distribution p.
         """
-
-        return self.rng.choice(v.children, p=v.p)
+        choice = self.rng.choice(len(v.children), p=v.p)
+        return v.children[choice]
 
 class UCBBandit:
     """
@@ -70,7 +107,7 @@ class UCBBandit:
     def __init__(self) -> None:
         self.rng = np.random.default_rng()
 
-    def initialize_node(self, node: MCTSNode, game: Game) -> None:
+    def initialize_node(self, node: CBTNode, game: Game) -> None:
         """
         Initialize the node with uniform probabilities.
         """
@@ -84,7 +121,7 @@ class UCBBandit:
             node.A_inv = np.identity(length)
             node.mu_hat = np.ones(length) / length
 
-    def update_node(self, node: MCTSNode, game: Game, score: int) -> None:
+    def update_node(self, node: CBTNode, game: Game, score: int) -> None:
         """
         Update the statistics of the given node and its children based on the score.
         """
@@ -96,20 +133,21 @@ class UCBBandit:
         if node.children:
             self._update_depth_one_node(node, game, score)
 
-    def choose_arm(self, v: MCTSNode) -> MCTSNode:
+    def choose_arm(self, v: CBTNode) -> CBTNode:
         """
         Sample a child node (arm) based on the probability distribution p.
         """
-        return self.rng.choice(v.children, p=v.p)
+        choice = self.rng.choice(len(v.children), p=v.p)
+        return v.children[choice]
 
-    def UCB1(self, v: MCTSNode) -> float:
+    def UCB1(self, v: CBTNode) -> float:
         """
         Calculate the UCB1 value for the given node.
         """
         k: Final[float] = 0.75
         return v.r / v.n + k * sqrt(log(v.n_accent) / v.n)
 
-    def update_regression(self, node: MCTSNode, score: float) -> None:
+    def update_regression(self, node: CBTNode, score: float) -> None:
         """
         Update the regression parameters for the given node based on the score.
         """
@@ -121,21 +159,21 @@ class UCBBandit:
         node.mu_hat = np.dot(node.b, node.A_inv)
 
     # Helper methods
-    def _update_node_statistics(self, node: MCTSNode, score: int) -> None:
+    def _update_node_statistics(self, node: CBTNode, score: int) -> None:
         """
         Increment visit count and update the reward for the given node.
         """
         node.n += 1
         node.r += score
 
-    def _update_children_statistics(self, node: MCTSNode) -> None:
+    def _update_children_statistics(self, node: CBTNode) -> None:
         """
         Increment the n_accent value for all children of the given node.
         """
         for child in node.children:
             child.n_accent += 1
 
-    def _update_depth_one_node(self, node: MCTSNode, game: Game, score: int) -> None:
+    def _update_depth_one_node(self, node: CBTNode, game: Game, score: int) -> None:
         """
         Update the probabilities and regression for a depth-one node.
         """
@@ -175,7 +213,7 @@ class CBTMinimal:
             2*self.K*iters/self.regression_regret(iters)
         )
 
-        root = MCTSNode()
+        root = CBTNode()
         self.cbandit.initialize_node(root, self.game)
 
         # Create all children of the root node.
@@ -195,7 +233,7 @@ class CBTMinimal:
         best_child = max(root.children, key=lambda child: child.n)
         return best_child.prev_move
 
-    def select(self, v: MCTSNode) -> MCTSNode:
+    def select(self, v: CBTNode) -> CBTNode:
         """
         Traverse the tree to select a node for expansion.
         """
@@ -212,7 +250,7 @@ class CBTMinimal:
 
         return v
 
-    def expand_root(self, root: MCTSNode) -> MCTSNode:
+    def expand_root(self, root: CBTNode) -> CBTNode:
         """
         Expand the root node by adding all possible children.
         """
@@ -225,7 +263,7 @@ class CBTMinimal:
 
         return root
 
-    def expand(self, v: MCTSNode) -> MCTSNode:
+    def expand(self, v: CBTNode) -> CBTNode:
         """
         Expand the tree by adding a new child node to the given node.
         """
@@ -243,14 +281,14 @@ class CBTMinimal:
 
         return v
 
-    def backpropagate(self, v: MCTSNode, score: int) -> None:
+    def backpropagate(self, v: CBTNode, score: int) -> None:
         """
         Update the statistics of all nodes along the path from the given node to the root.
         """
-        node: MCTSNode | None = v
+        node: CBTNode | None = v
         while node:
             if node.depth == 0:
-                bandit = self.cbandit
+                bandit: CBandit | UCBBandit = self.cbandit
             else:
                 bandit = self.ucb_bandit
 
@@ -267,17 +305,17 @@ class CBTMinimal:
         """
         if not self.game.finished:
             raise RuntimeError("I made a mistake")
-        game: Board = copy.deepcopy(self.game)
+        game: Game = copy.deepcopy(self.game)
         while not game.finished:
             moves: list[int] = list(game.moves)
             next_move: int = random.choice(moves)
-            game.update(next_move)
+            game.do(next_move)
 
-        score = game.points
+        score = int(game.points)
 
         return score
 
-    def missing_moves(self, v: MCTSNode) -> list[int]:
+    def missing_moves(self, v: CBTNode) -> list[int]:
         """
         Return a list of moves that are not yet explored from the given node.
         """
