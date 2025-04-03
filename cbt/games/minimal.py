@@ -128,5 +128,4 @@ class Minimal(Game):
         return 1-int(self.points)
 
     def print_means(self) -> None:
-        with np.printoptions(precision=2, suppress=True):
-            print(self.means)
+        print(np.array2string(self.means, precision=2, suppress_small=True, separator=', '))

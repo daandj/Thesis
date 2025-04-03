@@ -1,5 +1,13 @@
 #!/bin/bash
 
-#First run the minimal experiment
+# Create a directory for the data if it doesn't exist
+mkdir -p data
+mkdir -p plots
+
+# First run the minimal experiment
 echo "Running minimal experiment"
-bin/minimal_experiment | awk -f bin/make_aggregate.awk > data/minimal.dat
+bin/minimal_experiment | awk -f bin/make_aggregate.awk -v means_out=data/minimal_means.dat > data/minimal.dat
+
+# Then make plots from the data
+echo "Making plots from data..."
+gnuplot -c bin/plot_settings.gp
