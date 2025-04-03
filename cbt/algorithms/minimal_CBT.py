@@ -15,6 +15,7 @@ from __future__ import annotations
 import copy
 from math import sqrt, log
 import random
+import sys
 from typing import Final
 import numpy as np
 import numpy.typing as npt
@@ -57,6 +58,16 @@ class CBTNode:
 
         self.parent = parent
         self.depth = self.parent.depth+1
+
+    def print_tree(self) -> None:
+        """
+        Print the tree structure for debugging purposes.
+        """
+        print("\t" * self.depth + \
+            f"Node: {self.depth=}, {self.n=}, {self.r=}, {self.n_accent=}",
+            file=sys.stderr)
+        for child in self.children:
+            child.print_tree()
 
 class CBandit:
     """
@@ -131,7 +142,12 @@ class UCBBandit:
             self._update_children_statistics(node)
 
         if node.children:
-            self._update_depth_one_node(node, game, score)
+            if node.leaf:
+                return
+            idx, _ = min(enumerate(node.children), key=lambda tup: self.LCB1(tup[1]))
+            node.p = np.zeros(len(game.moves))
+            node.p[idx] = 1
+            self.update_regression(node, score)
 
     def choose_arm(self, v: CBTNode) -> CBTNode:
         """
@@ -140,12 +156,12 @@ class UCBBandit:
         choice = self.rng.choice(len(v.children), p=v.p)
         return v.children[choice]
 
-    def UCB1(self, v: CBTNode) -> float:
+    def LCB1(self, v: CBTNode) -> float:
         """
         Calculate the UCB1 value for the given node.
         """
         k: Final[float] = 0.75
-        return v.r / v.n + k * sqrt(log(v.n_accent) / v.n)
+        return v.r / v.n - k * sqrt(log(v.n_accent) / v.n)
 
     def update_regression(self, node: CBTNode, score: float) -> None:
         """
@@ -172,17 +188,6 @@ class UCBBandit:
         """
         for child in node.children:
             child.n_accent += 1
-
-    def _update_depth_one_node(self, node: CBTNode, game: Game, score: int) -> None:
-        """
-        Update the probabilities and regression for a depth-one node.
-        """
-        if node.leaf:
-            return
-        idx, _ = min(enumerate(node.children), key=lambda tup: self.UCB1(tup[1]))
-        node.p = np.zeros(len(game.moves))
-        node.p[idx] = 1
-        self.update_regression(node, score)
 
 class CBTMinimal:
     """
@@ -231,6 +236,8 @@ class CBTMinimal:
 
         # TODO: Think about what to return
         best_child = max(root.children, key=lambda child: child.n)
+
+        # root.print_tree()
         return best_child.prev_move
 
     def select(self, v: CBTNode) -> CBTNode:
