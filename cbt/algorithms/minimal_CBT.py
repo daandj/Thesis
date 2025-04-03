@@ -234,6 +234,9 @@ class CBTMinimal:
             if self.print_data:
                 print(f"{i} {res}")
 
+            if i % 10000 == 0:
+                print(f"t={i}", file=sys.stderr)
+
         # TODO: Think about what to return
         best_child = max(root.children, key=lambda child: child.n)
 

@@ -27,7 +27,7 @@ def main() -> int:
 
     print("Results")
     first_player = mg.CBTMinimalPlayer(0, data_flag=True)
-    first_player.iterations = 100000
+    first_player.iterations = 20000
     first_player.make_move(game)
     return 0
 
