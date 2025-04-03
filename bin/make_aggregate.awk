@@ -5,6 +5,6 @@ BEGIN {state = ""; aggregate = 0 }
     if (state == "Means") {
     } else if (state == "Results") {
         aggregate += $2
-        print $1 "," aggregate
+        print $1 "\t" aggregate
     }
 }
