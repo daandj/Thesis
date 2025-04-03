@@ -3,8 +3,12 @@ BEGIN {state = ""; aggregate = 0 }
 /Results/ { state = "Results" }
 !/Results/ || /Means/ {
     if (state == "Means") {
+        if (means_out) {
+            print $0 > means_out
+        }
     } else if (state == "Results") {
         aggregate += $2
-        print $1 "\t" aggregate
+        avg_wins = aggregate/NR
+        print $1 "\t" avg_wins
     }
 }
