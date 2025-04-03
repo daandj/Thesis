@@ -16,8 +16,10 @@ from math import sqrt, log
 import random
 from typing import Final
 import numpy as np
-from algorithms.MCTS import Board, MCTSNode
-from game import Game
+
+from cbt.algorithms.MCTS import Board, MCTSNode
+from cbt.game import Game
+
 
 class CBandit:
     """
@@ -156,7 +158,7 @@ class CBTMinimal:
 
     def __init__(self, game: Game,
                  data_flag: bool = False) -> None:
-        self.K: Final[int] = len(game.moves)
+        self.K: int = len(game.moves)
         self.moves = game.moves
         self.game = game
         self.print_data = data_flag

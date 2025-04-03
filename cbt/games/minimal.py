@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import numpy as np
-from algorithms.minimal_CBT import CBTMinimal
-from game import Game
-from player import Player
+from cbt.algorithms.minimal_CBT import CBTMinimal
+from cbt.game import Game
+from cbt.player import Player
 
 class HumanPlayer(Player):
     def make_move(self, game: Game) -> int:
@@ -21,12 +21,13 @@ class HumanPlayer(Player):
 class CBTMinimalPlayer(Player):
     def __init__(self, location, data_flag: bool = False):
         super().__init__(location, data_flag=data_flag)
+        self.iterations = 1000
         if location != 0:
             raise ValueError("CBTMinimalPlayer can only be used for player 0")
 
-    def make_move(self, game: Game, data_flag: bool = False) -> int:
-        alg = CBTMinimal(game, data_flag=data_flag)
-        move = alg.run()
+    def make_move(self, game: Game) -> int:
+        alg = CBTMinimal(game, data_flag=self.data_flag)
+        move = alg.run(self.iterations)
         return move
 
 class Minimal(Game):

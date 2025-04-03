@@ -3,7 +3,8 @@ from math import sqrt, log
 import random
 from typing import Final
 import numpy as np
-from algorithms.MCTS import Board, MCTSNode
+
+from cbt.algorithms.MCTS import MCTSNode, Board
 
 # CBT class tries to maximise the outcome
 

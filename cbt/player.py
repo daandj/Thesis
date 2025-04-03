@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from game import Game
+from cbt.game import Game
 
 
 class Player(ABC):
