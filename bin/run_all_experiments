@@ -1,0 +1,5 @@
+#!/bin/bash
+
+#First run the minimal experiment
+echo "Running minimal experiment"
+bin/minimal_experiment | awk -f bin/make_aggregate.awk > data/minimal.dat
