@@ -32,9 +32,6 @@ class CBTNode:
     depth: int
     leaf: bool
     p: npt.NDArray[np.float64]
-    b: npt.NDArray[np.float64]
-    mu_hat: npt.NDArray[np.float64]
-    A_inv: npt.NDArray[np.float64]
 
 
     def __init__(self, parent: CBTNode | None = None):
@@ -69,53 +66,10 @@ class CBTNode:
         for child in self.children:
             child.print_tree()
 
-class CBandit:
-    """
-    Implements a contextual bandit algorithm for decision-making in the CBT framework.
-    """
-    def __init__(self, nu: int = 10, gamma: float = 0.5) -> None:
-        self.nu = nu
-        self.gamma = gamma
-        self.rng = np.random.default_rng()
-
-    def initialize_node(self, node: CBTNode, g: Game) -> None:
-        """
-        Initialize the given node with uniform probabilities, identity matrix, and zero vectors.
-        """
-        length = len(g.moves)
-        node.p = np.ones(length) / length
-        node.leaf = False
-
-    def update_node(self, node: CBTNode, game: Game, _: int) -> None:
-        """
-        Update the statistics of the given node and its children based on the score.
-        """
-        pi = np.zeros(len(game.moves))
-        for idx, child in enumerate(node.children):
-            if child.leaf:
-                pi[idx] = child.r
-            else:
-                pi[idx] = np.dot(child.p, child.mu_hat)
-        j = np.argmax(pi)
-        for idx, pi_i in enumerate(pi):
-            if idx == j:
-                continue
-            node.p[idx] = 1 / (self.nu + self.gamma * (pi[j] - pi_i))
-        node.p[j] = 1 + node.p[j] - np.sum(node.p)
-
-
-    def choose_arm(self, v: CBTNode) -> CBTNode:
-        """
-        Sample a child node (arm) based on the probability distribution p.
-        """
-        choice = self.rng.choice(len(v.children), p=v.p)
-        return v.children[choice]
-
 class UCBBandit:
     """
-    Implements the UCB bandit algorithm for move selection in the CBT framework.
+    Implements a Upper Confidence Bound bandit algorithm.
     """
-
     def __init__(self) -> None:
         self.rng = np.random.default_rng()
 
@@ -129,27 +83,31 @@ class UCBBandit:
             length = len(game.moves)
             node.p = np.ones(length) / length
             node.leaf = False
-            node.b = np.zeros(length)
-            node.A_inv = np.identity(length)
-            node.mu_hat = np.ones(length) / length
 
     def update_node(self, node: CBTNode, game: Game, score: int) -> None:
         """
         Update the statistics of the given node and its children based on the score.
         """
-        self._update_node_statistics(node, score)
+        node.n += 1
+        node.r += score
 
         if not node.leaf:
-            self._update_children_statistics(node)
+            for child in node.children:
+                child.n_accent += 1
 
         if node.children:
             if node.leaf:
                 return
-            idx, _ = min(enumerate(node.children), key=lambda tup: self.LCB1(tup[1]))
+
+            if node.depth == 0:
+                idx, _ = max(enumerate(node.children), key=lambda tup: self.UCB1(tup[1]))
+            elif node.depth == 1:
+                idx, _ = min(enumerate(node.children), key=lambda tup: self.LCB1(tup[1]))
+            else:
+                raise RuntimeError("Invalid node depth")
 
             node.p = np.zeros(len(game.moves))
             node.p[idx] = 1
-            self.update_regression(node, score)
 
     def choose_arm(self, v: CBTNode) -> CBTNode:
         """
@@ -165,33 +123,87 @@ class UCBBandit:
         k: Final[float] = 0.75
         return v.r / v.n - k * sqrt(log(v.n_accent) / v.n)
 
-    def update_regression(self, node: CBTNode, score: float) -> None:
+    def UCB1(self, v: CBTNode) -> float:
         """
-        Update the regression parameters for the given node based on the score.
+        Calculate the UCB1 value for the given node.
         """
-        node.b += score * node.p
-        mul_x = np.dot(node.A_inv, node.p)
-        num = np.outer(mul_x, mul_x)
-        denom = 1 + np.dot(node.p, mul_x)
-        node.A_inv -= num / denom
-        node.mu_hat = np.dot(node.b, node.A_inv)
+        k: Final[float] = 0.75
+        return v.r / v.n + k * sqrt(log(v.n_accent) / v.n)
 
-    # Helper methods
-    def _update_node_statistics(self, node: CBTNode, score: int) -> None:
-        """
-        Increment visit count and update the reward for the given node.
-        """
-        node.n += 1
-        node.r += score
+# class LCBBandit:
+#     """
+#     Implements the Lower Confidence Bound bandit algorithm.
+#     """
 
-    def _update_children_statistics(self, node: CBTNode) -> None:
-        """
-        Increment the n_accent value for all children of the given node.
-        """
-        for child in node.children:
-            child.n_accent += 1
+#     def __init__(self) -> None:
+#         self.rng = np.random.default_rng()
 
-class CBTMinimal:
+#     def initialize_node(self, node: CBTNode, game: Game) -> None:
+#         """
+#         Initialize the node with uniform probabilities.
+#         """
+#         if game.finished:
+#             node.leaf = True
+#         else:
+#             length = len(game.moves)
+#             node.p = np.ones(length) / length
+#             node.leaf = False
+
+#     def update_node(self, node: CBTNode, game: Game, score: int) -> None:
+#         """
+#         Update the statistics of the given node and its children based on the score.
+#         """
+#         self._update_node_statistics(node, score)
+
+#         if not node.leaf:
+#             self._update_children_statistics(node)
+
+#         if node.children:
+#             if node.leaf:
+#                 return
+
+#             idx, _ = min(enumerate(node.children), key=lambda tup: self.LCB1(tup[1]))
+
+#             node.p = np.zeros(len(game.moves))
+#             node.p[idx] = 1
+
+#     def choose_arm(self, v: CBTNode) -> CBTNode:
+#         """
+#         Sample a child node (arm) based on the probability distribution p.
+#         """
+#         choice = self.rng.choice(len(v.children), p=v.p)
+#         return v.children[choice]
+
+#     def LCB1(self, v: CBTNode) -> float:
+#         """
+#         Calculate the UCB1 value for the given node.
+#         """
+#         k: Final[float] = 0.75
+#         return v.r / v.n - k * sqrt(log(v.n_accent) / v.n)
+
+#     def UCB1(self, v: CBTNode) -> float:
+#         """
+#         Calculate the UCB1 value for the given node.
+#         """
+#         k: Final[float] = 0.75
+#         return v.r / v.n + k * sqrt(log(v.n_accent) / v.n)
+
+#     # Helper methods
+#     def _update_node_statistics(self, node: CBTNode, score: int) -> None:
+#         """
+#         Increment visit count and update the reward for the given node.
+#         """
+#         node.n += 1
+#         node.r += score
+
+#     def _update_children_statistics(self, node: CBTNode) -> None:
+#         """
+#         Increment the n_accent value for all children of the given node.
+#         """
+#         for child in node.children:
+#             child.n_accent += 1
+
+class UCBMinimal:
     """
     Implements the Contextual Bandits for Tree search (CBT)
     algorithm for maximizing outcomes in a game-like environment.
@@ -209,21 +221,14 @@ class CBTMinimal:
         self.game = game
         self.print_data = data_flag
         self.print_flag = print_flag
-        self.cbandit = CBandit()
-        self.ucb_bandit = UCBBandit()
+        self.bandit = UCBBandit()
 
     def run(self, iters: int = 10000) -> int:
         """
         Run the CBT algorithm for a specified number of iterations and return the best move.
         """
-        self.cbandit.nu = 500
-
-        self.cbandit.gamma = 3 * sqrt(
-            2*self.K*iters/self.regression_regret(iters)
-        )
-
         root = CBTNode()
-        self.cbandit.initialize_node(root, self.game)
+        self.bandit.initialize_node(root, self.game)
 
         # Create all children of the root node.
         self.expand_root(root)
@@ -237,7 +242,6 @@ class CBTMinimal:
 
             if self.print_data:
                 print(f"{i} {res}")
-
             if self.print_flag:
                 if i % 10000 == 0:
                     print(f"t={i}", file=sys.stderr)
@@ -245,6 +249,8 @@ class CBTMinimal:
         # TODO: Think about what to return
         best_child = max(root.children, key=lambda child: child.n)
 
+        if self.print_flag:
+            root.print_tree()
         return best_child.prev_move
 
     def select(self, v: CBTNode) -> CBTNode:
@@ -252,12 +258,12 @@ class CBTMinimal:
         Traverse the tree to select a node for expansion.
         """
 
-        v = self.cbandit.choose_arm(v)
+        v = self.bandit.choose_arm(v)
         self.game.do(v.prev_move)
 
         if len(self.missing_moves(v)) == 0:
             # If all children are visited, select the best child based on UCB1.
-            v = self.ucb_bandit.choose_arm(v)
+            v = self.bandit.choose_arm(v)
             self.game.do(v.prev_move)
         else:
             v = self.expand(v)
@@ -272,8 +278,9 @@ class CBTMinimal:
         for move in moves:
             child = root.add_child(move)
             self.game.do(move)
-            self.ucb_bandit.initialize_node(child, self.game)
-            self.game.undo()
+            self.bandit.initialize_node(child, self.game)
+            score = self.simulate()
+            self.backpropagate(child, score)
 
         return root
 
@@ -291,7 +298,7 @@ class CBTMinimal:
         v = v.add_child(new_move)
 
         self.game.do(new_move)
-        self.ucb_bandit.initialize_node(v,self.game)
+        self.bandit.initialize_node(v,self.game)
 
         return v
 
@@ -301,12 +308,7 @@ class CBTMinimal:
         """
         node: CBTNode | None = v
         while node:
-            if node.depth == 0:
-                bandit: CBandit | UCBBandit = self.cbandit
-            else:
-                bandit = self.ucb_bandit
-
-            bandit.update_node(node, self.game, score)
+            self.bandit.update_node(node, self.game, score)
 
             if node.parent is not None:
                 self.game.undo()
@@ -317,8 +319,6 @@ class CBTMinimal:
         """
         Simulate the game from the current board state to the end and return the score.
         """
-        if not self.game.finished:
-            raise RuntimeError("I made a mistake")
         game: Game = copy.deepcopy(self.game)
         while not game.finished:
             moves: list[int] = list(game.moves)
