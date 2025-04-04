@@ -6,7 +6,10 @@ mkdir -p plt
 
 # First run the minimal experiment
 echo "Running minimal experiment"
-bin/minimal_experiment 2>log.txt | awk -f bin/make_aggregate.awk -v means_out=data/minimal_means.dat > data/minimal.dat
+bin/minimal_experiment | awk -f bin/make_aggregate.awk -v means_out=data/minimal_means.dat > data/minimal_cbt.dat
+echo "Running minimal control"
+bin/minimal_control | awk -f bin/make_aggregate.awk -v means_out=data/minimal_means.dat > data/minimal_ucb.dat
+
 
 # Then make plots from the data
 echo "Making plots from data..."

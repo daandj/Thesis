@@ -8,7 +8,7 @@ BEGIN {state = ""; aggregate = 0 }
         }
     } else if (state == "Results") {
         aggregate += $2
-        avg_wins = aggregate/NR
+        avg_wins = aggregate/($1+1)
         print $1 "\t" avg_wins
     }
 }
