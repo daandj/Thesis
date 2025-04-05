@@ -216,7 +216,7 @@ class CBTMinimal:
         """
         Run the CBT algorithm for a specified number of iterations and return the best move.
         """
-        self.cbandit.nu = 500
+        self.cbandit.nu = 1000
 
         self.cbandit.gamma = 3 * sqrt(
             2*self.K*iters/self.regression_regret(iters)

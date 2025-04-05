@@ -1,5 +1,8 @@
+control = "data/".ARG1."_ucb.dat"
+experiment = "data/".ARG1."_cbt.dat"
+
 set terminal png
-set output 'plt/minimal.png'
+set output 'plt/'.ARG1.'.png'
 set grid
-plot "data/minimal_cbt.dat" title "CBT" with lines, \
-     "data/minimal_ucb.dat" title "UCB" with lines
+plot experiment title "CBT" with lines, \
+     control title "UCB" with lines

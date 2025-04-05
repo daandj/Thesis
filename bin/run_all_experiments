@@ -5,12 +5,17 @@ mkdir -p data
 mkdir -p plt
 
 # First run the minimal experiment
-echo "Running minimal experiment"
-bin/minimal_experiment | awk -f bin/make_aggregate.awk -v means_out=data/minimal_means.dat > data/minimal_cbt.dat
-echo "Running minimal control"
-bin/minimal_control | awk -f bin/make_aggregate.awk -v means_out=data/minimal_means.dat > data/minimal_ucb.dat
+echo "Running minimal experiment (10x10)"
+bin/minimal_experiment 10 | awk -f bin/make_aggregate.awk -v means_out=data/minimal_means.dat > data/minimal_10_cbt.dat
+echo "Running minimal control (10x10)"
+bin/minimal_control 10 | awk -f bin/make_aggregate.awk -v means_out=data/minimal_means.dat > data/minimal_10_ucb.dat
 
+echo "Running minimal experiment (20x20)"
+bin/minimal_experiment 20 | awk -f bin/make_aggregate.awk -v means_out=data/minimal_means.dat > data/minimal_20_cbt.dat
+echo "Running minimal control (20x20)"
+bin/minimal_control 20 | awk -f bin/make_aggregate.awk -v means_out=data/minimal_means.dat > data/minimal_20_ucb.dat
 
 # Then make plots from the data
 echo "Making plots from data..."
-gnuplot -c bin/plot_settings.gp
+gnuplot -c bin/plot_settings.gp minimal_10
+gnuplot -c bin/plot_settings.gp minimal_20
