@@ -24,3 +24,4 @@ bin/minimal_control 30 500000 | awk -f bin/make_aggregate.awk > data/minimal_30_
 echo "Making plots from data..."
 gnuplot -c bin/plot_settings.gp minimal_10
 gnuplot -c bin/plot_settings.gp minimal_20
+gnuplot -c bin/plot_settings.gp minimal_30

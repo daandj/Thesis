@@ -6,11 +6,13 @@ import numpy as np
 
 import cbt.games.minimal as mg
 
-def main(size: int) -> int:
+def main(size: int, iterations: int) -> int:
     if size == 10:
         means = m.means_10_10
     elif size == 20:
         means = m.means_20_20
+    elif size == 30:
+        means = m.means_30_30
     else:
         raise ValueError("Invalid size. Use 10 or 20.")
 
