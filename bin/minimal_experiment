@@ -6,21 +6,18 @@ import numpy as np
 
 import cbt.games.minimal as mg
 
-def main(size: int) -> int:
+def main(size: int, iterations: int) -> int:
     if size == 10:
         means = m.means_10_10
     elif size == 20:
         means = m.means_20_20
+    elif size == 30:
+        means = m.means_30_30
     else:
         raise ValueError("Invalid size. Use 10 or 20.")
-    print("Means")
+
     game = mg.Minimal(means=means)
-    game.print_means()
-    min_max(means)
 
-    iterations = 100000
-
-    print("Results")
     cbt_player = mg.CBTMinimalPlayer(0, data_flag=True, print_flag=False)
     cbt_player.iterations = iterations
     cbt_player.make_move(game)
@@ -33,5 +30,6 @@ def min_max(means: np.ndarray) -> int:
 
 if __name__ == '__main__':
     s = int(sys.argv[1])
+    iters = int(sys.argv[2])
 
-    sys.exit(main(s))
+    sys.exit(main(s, iters))

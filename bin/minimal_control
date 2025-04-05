@@ -13,14 +13,9 @@ def main(size: int) -> int:
         means = m.means_20_20
     else:
         raise ValueError("Invalid size. Use 10 or 20.")
-    print("Means")
+
     game = mg.Minimal(means=means)
-    game.print_means()
-    min_max(means)
 
-    iterations = 100000
-
-    print("Results")
     ucb_player = mg.UCBMinimalPlayer(0, data_flag=True, print_flag=False)
     ucb_player.iterations = iterations
     ucb_player.make_move(game)
@@ -32,5 +27,6 @@ def min_max(means: np.ndarray) -> int:
 
 if __name__ == '__main__':
     s = int(sys.argv[1])
+    iters = int(sys.argv[2])
 
-    sys.exit(main(s))
+    sys.exit(main(s, iters))

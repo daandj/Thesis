@@ -6,14 +6,19 @@ mkdir -p plt
 
 # First run the minimal experiment
 echo "Running minimal experiment (10x10)"
-bin/minimal_experiment 10 | awk -f bin/make_aggregate.awk -v means_out=data/minimal_means.dat > data/minimal_10_cbt.dat
+bin/minimal_experiment 10 100000 | awk -f bin/make_aggregate.awk > data/minimal_10_cbt.dat
 echo "Running minimal control (10x10)"
-bin/minimal_control 10 | awk -f bin/make_aggregate.awk -v means_out=data/minimal_means.dat > data/minimal_10_ucb.dat
+bin/minimal_control 10 100000 | awk -f bin/make_aggregate.awk > data/minimal_10_ucb.dat
 
 echo "Running minimal experiment (20x20)"
-bin/minimal_experiment 20 | awk -f bin/make_aggregate.awk -v means_out=data/minimal_means.dat > data/minimal_20_cbt.dat
+bin/minimal_experiment 20 100000 | awk -f bin/make_aggregate.awk > data/minimal_20_cbt.dat
 echo "Running minimal control (20x20)"
-bin/minimal_control 20 | awk -f bin/make_aggregate.awk -v means_out=data/minimal_means.dat > data/minimal_20_ucb.dat
+bin/minimal_control 20 100000 | awk -f bin/make_aggregate.awk > data/minimal_20_ucb.dat
+
+echo "Running minimal experiment (30x30)"
+bin/minimal_experiment 30 500000 | awk -f bin/make_aggregate.awk > data/minimal_30_cbt.dat
+echo "Running minimal control (30x30)"
+bin/minimal_control 30 500000 | awk -f bin/make_aggregate.awk > data/minimal_30_ucb.dat
 
 # Then make plots from the data
 echo "Making plots from data..."
