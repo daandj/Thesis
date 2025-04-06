@@ -317,8 +317,6 @@ class CBTMinimal:
         """
         Simulate the game from the current board state to the end and return the score.
         """
-        if not self.game.finished:
-            raise RuntimeError("I made a mistake")
         game: Game = copy.deepcopy(self.game)
         while not game.finished:
             moves: list[int] = list(game.moves)
