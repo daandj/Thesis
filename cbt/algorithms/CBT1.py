@@ -9,6 +9,7 @@ the `CBT` class for the tree search process.
 Classes:
     Bandit: Implements a contextual bandit algorithm for decision-making.
     CBT: Implements the Contextual Bandit for Tree search (CBT) algorithm for maximizing outcomes.
+    CBT1Player: A player that uses the CBT1 algorithm to make decisions in any game.
 """
 
 from __future__ import annotations
@@ -21,6 +22,7 @@ import numpy as np
 import numpy.typing as npt
 
 from cbt.game import Game
+from cbt.player import Player
 
 class CBTNode:
     n: int
@@ -191,7 +193,7 @@ class UCBBandit:
         for child in node.children:
             child.n_accent += 1
 
-class CBTMinimal:
+class CBT1:
     """
     Implements the Contextual Bandits for Tree search (CBT)
     algorithm for maximizing outcomes in a game-like environment.
@@ -216,9 +218,9 @@ class CBTMinimal:
         """
         Run the CBT algorithm for a specified number of iterations and return the best move.
         """
-        self.cbandit.nu = 1000
+        self.cbandit.nu = 100
 
-        self.cbandit.gamma = 3 * sqrt(
+        self.cbandit.gamma = sqrt(
             2*self.K*iters/self.regression_regret(iters)
         )
 
@@ -317,8 +319,6 @@ class CBTMinimal:
         """
         Simulate the game from the current board state to the end and return the score.
         """
-        if not self.game.finished:
-            raise RuntimeError("I made a mistake")
         game: Game = copy.deepcopy(self.game)
         while not game.finished:
             moves: list[int] = list(game.moves)
@@ -341,3 +341,19 @@ class CBTMinimal:
         Calculate the regression regret for the given number of iterations.
         """
         return sqrt(t) # TODO: This, but correct.
+
+
+class CBT1Player(Player):
+    iterations: int
+
+    def __init__(self, location, data_flag = False, print_flag = False):
+        super().__init__(location, data_flag=data_flag, print_flag=print_flag)
+        self.iterations = 1000
+        if location != 0:
+            raise ValueError("CBTMinimalPlayer can only be used for player 0")
+
+    def make_move(self, game: Game) -> int:
+        alg = CBT1(game, self.data_flag, self.print_flag)
+
+        move = alg.run(self.iterations)
+        return move

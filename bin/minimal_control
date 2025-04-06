@@ -5,6 +5,7 @@ import means as m # type: ignore
 import numpy as np
 
 import cbt.games.minimal as mg
+import cbt.algorithms.minimal_UCB as ucb
 
 def main(size: int, iterations: int) -> int:
     if size == 10:
@@ -18,9 +19,10 @@ def main(size: int, iterations: int) -> int:
 
     game = mg.Minimal(means=means)
 
-    ucb_player = mg.UCBMinimalPlayer(0, data_flag=True, print_flag=False)
+    ucb_player = ucb.UCBPlayer(0, data_flag=True, print_flag=False)
     ucb_player.iterations = iterations
-    ucb_player.make_move(game)
+    move = ucb_player.make_move(game)
+    print(f"Minimal control ({size=}), made move: {move}", file=sys.stderr)
     return 0
 
 def min_max(means: np.ndarray) -> int:
