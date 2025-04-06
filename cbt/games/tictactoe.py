@@ -2,7 +2,6 @@ from enum import IntEnum
 from functools import reduce
 from operator import add
 import random
-from cbt.algorithms.cbt_alg import CBT
 from cbt.algorithms.MCTS import MCTS
 from cbt.game import Game
 from cbt.player import Player
@@ -55,17 +54,6 @@ class MCTSPlayer(Player):
 
         move = alg.run()
         return move
-
-class CBTPlayer(Player):
-    def make_move(self, game: Game) -> int:
-        if not isinstance(game, TicTacToe):
-            raise RuntimeError("This player is only for TicTacToe")
-
-        alg = CBT(game)
-
-        move = alg.run()
-        return move
-
 
 class TicTacToe(Game):
     """

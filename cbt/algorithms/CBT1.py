@@ -9,6 +9,7 @@ the `CBT` class for the tree search process.
 Classes:
     Bandit: Implements a contextual bandit algorithm for decision-making.
     CBT: Implements the Contextual Bandit for Tree search (CBT) algorithm for maximizing outcomes.
+    CBT1Player: A player that uses the CBT1 algorithm to make decisions in any game.
 """
 
 from __future__ import annotations
@@ -21,6 +22,7 @@ import numpy as np
 import numpy.typing as npt
 
 from cbt.game import Game
+from cbt.player import Player
 
 class CBTNode:
     n: int
@@ -191,7 +193,7 @@ class UCBBandit:
         for child in node.children:
             child.n_accent += 1
 
-class CBTMinimal:
+class CBT1:
     """
     Implements the Contextual Bandits for Tree search (CBT)
     algorithm for maximizing outcomes in a game-like environment.
@@ -339,3 +341,12 @@ class CBTMinimal:
         Calculate the regression regret for the given number of iterations.
         """
         return sqrt(t) # TODO: This, but correct.
+
+
+class CBT1Player(Player):
+    def make_move(self, game: Game) -> int:
+
+        alg = CBT1(game)
+
+        move = alg.run()
+        return move
