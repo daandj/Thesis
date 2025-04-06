@@ -344,9 +344,16 @@ class CBT1:
 
 
 class CBT1Player(Player):
+    iterations: int
+
+    def __init__(self, location, data_flag = False, print_flag = False):
+        super().__init__(location, data_flag=data_flag, print_flag=print_flag)
+        self.iterations = 1000
+        if location != 0:
+            raise ValueError("CBTMinimalPlayer can only be used for player 0")
+
     def make_move(self, game: Game) -> int:
+        alg = CBT1(game, self.data_flag, self.print_flag)
 
-        alg = CBT1(game)
-
-        move = alg.run()
+        move = alg.run(self.iterations)
         return move

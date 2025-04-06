@@ -21,6 +21,7 @@ import numpy as np
 import numpy.typing as npt
 
 from cbt.game import Game
+from cbt.player import Player
 
 class CBTNode:
     n: int
@@ -129,79 +130,6 @@ class UCBBandit:
         """
         k: Final[float] = 0.75
         return v.r / v.n + k * sqrt(log(v.n_accent) / v.n)
-
-# class LCBBandit:
-#     """
-#     Implements the Lower Confidence Bound bandit algorithm.
-#     """
-
-#     def __init__(self) -> None:
-#         self.rng = np.random.default_rng()
-
-#     def initialize_node(self, node: CBTNode, game: Game) -> None:
-#         """
-#         Initialize the node with uniform probabilities.
-#         """
-#         if game.finished:
-#             node.leaf = True
-#         else:
-#             length = len(game.moves)
-#             node.p = np.ones(length) / length
-#             node.leaf = False
-
-#     def update_node(self, node: CBTNode, game: Game, score: int) -> None:
-#         """
-#         Update the statistics of the given node and its children based on the score.
-#         """
-#         self._update_node_statistics(node, score)
-
-#         if not node.leaf:
-#             self._update_children_statistics(node)
-
-#         if node.children:
-#             if node.leaf:
-#                 return
-
-#             idx, _ = min(enumerate(node.children), key=lambda tup: self.LCB1(tup[1]))
-
-#             node.p = np.zeros(len(game.moves))
-#             node.p[idx] = 1
-
-#     def choose_arm(self, v: CBTNode) -> CBTNode:
-#         """
-#         Sample a child node (arm) based on the probability distribution p.
-#         """
-#         choice = self.rng.choice(len(v.children), p=v.p)
-#         return v.children[choice]
-
-#     def LCB1(self, v: CBTNode) -> float:
-#         """
-#         Calculate the UCB1 value for the given node.
-#         """
-#         k: Final[float] = 0.75
-#         return v.r / v.n - k * sqrt(log(v.n_accent) / v.n)
-
-#     def UCB1(self, v: CBTNode) -> float:
-#         """
-#         Calculate the UCB1 value for the given node.
-#         """
-#         k: Final[float] = 0.75
-#         return v.r / v.n + k * sqrt(log(v.n_accent) / v.n)
-
-#     # Helper methods
-#     def _update_node_statistics(self, node: CBTNode, score: int) -> None:
-#         """
-#         Increment visit count and update the reward for the given node.
-#         """
-#         node.n += 1
-#         node.r += score
-
-#     def _update_children_statistics(self, node: CBTNode) -> None:
-#         """
-#         Increment the n_accent value for all children of the given node.
-#         """
-#         for child in node.children:
-#             child.n_accent += 1
 
 class UCBMinimal:
     """
@@ -341,3 +269,15 @@ class UCBMinimal:
         Calculate the regression regret for the given number of iterations.
         """
         return sqrt(t) # TODO: This, but correct.
+
+class UCBPlayer(Player):
+    def __init__(self, location, data_flag = False, print_flag: bool = False):
+        super().__init__(location, data_flag=data_flag, print_flag=print_flag)
+        self.iterations = 1000
+        if location != 0:
+            raise ValueError("UCBMinimalPlayer can only be used for player 0")
+
+    def make_move(self, game: Game) -> int:
+        alg = UCBMinimal(game, data_flag=self.data_flag, print_flag=self.print_flag)
+        move = alg.run(self.iterations)
+        return move

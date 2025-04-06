@@ -3,6 +3,7 @@ from functools import reduce
 from operator import add
 import random
 from cbt.algorithms.MCTS import MCTS
+from cbt.algorithms.cbt_alg import CBT
 from cbt.game import Game
 from cbt.player import Player
 
@@ -51,6 +52,16 @@ class MCTSPlayer(Player):
             raise RuntimeError("This player is only for TicTacToe")
 
         alg = MCTS(game)
+
+        move = alg.run()
+        return move
+
+class CBTPlayer(Player):
+    def make_move(self, game: Game) -> int:
+        if not isinstance(game, TicTacToe):
+            raise RuntimeError("This player is only for TicTacToe")
+
+        alg = CBT(game)
 
         move = alg.run()
         return move
@@ -123,8 +134,11 @@ class TicTacToe(Game):
             points = 0
         elif self._winner == Move.X:
             points = 1
-        else:
+        elif self._winner == Move.EMPTY:
+            # Draw
             points = 0.5
+        else:
+            raise RuntimeError("Invalid winner")
 
         return points
 

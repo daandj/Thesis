@@ -1,8 +1,6 @@
 from __future__ import annotations
 
 import numpy as np
-from cbt.algorithms.minimal_CBT import CBTMinimal
-from cbt.algorithms.minimal_UCB import UCBMinimal
 from cbt.game import Game
 from cbt.player import Player
 
@@ -18,32 +16,6 @@ class HumanPlayer(Player):
                 continue
 
             return int(input_str)
-
-class CBTMinimalPlayer(Player):
-    def __init__(self, location,
-                 data_flag: bool = False,
-                 print_flag: bool = False):
-        super().__init__(location, data_flag=data_flag, print_flag=print_flag)
-        self.iterations = 1000
-        if location != 0:
-            raise ValueError("CBTMinimalPlayer can only be used for player 0")
-
-    def make_move(self, game: Game) -> int:
-        alg = CBTMinimal(game, data_flag=self.data_flag)
-        move = alg.run(self.iterations)
-        return move
-
-class UCBMinimalPlayer(Player):
-    def __init__(self, location, data_flag = False, print_flag: bool = False):
-        super().__init__(location, data_flag=data_flag, print_flag=print_flag)
-        self.iterations = 1000
-        if location != 0:
-            raise ValueError("UCBMinimalPlayer can only be used for player 0")
-
-    def make_move(self, game: Game) -> int:
-        alg = UCBMinimal(game, data_flag=self.data_flag, print_flag=self.print_flag)
-        move = alg.run(self.iterations)
-        return move
 
 class Minimal(Game):
     means: np.ndarray
