@@ -218,9 +218,9 @@ class CBT1:
         """
         Run the CBT algorithm for a specified number of iterations and return the best move.
         """
-        self.cbandit.nu = 1000
+        self.cbandit.nu = 100
 
-        self.cbandit.gamma = 3 * sqrt(
+        self.cbandit.gamma = sqrt(
             2*self.K*iters/self.regression_regret(iters)
         )
 

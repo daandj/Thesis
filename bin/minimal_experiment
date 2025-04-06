@@ -21,8 +21,8 @@ def main(size: int, iterations: int) -> int:
 
     cbt_player = cbt.CBT1Player(0, data_flag=True, print_flag=False)
     cbt_player.iterations = iterations
-    cbt_player.make_move(game)
-    game.reset()
+    move = cbt_player.make_move(game)
+    print(f"Minimal experiment ({size=}), made move: {move}", file=sys.stderr)
     return 0
 
 def min_max(means: np.ndarray) -> int:

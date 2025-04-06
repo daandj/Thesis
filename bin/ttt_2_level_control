@@ -12,7 +12,8 @@ def main(size: int, iterations: int) -> int:
 
     cbt_player = ucb.UCBPlayer(0, data_flag=True, print_flag=False)
     cbt_player.iterations = iterations
-    cbt_player.make_move(game)
+    move = cbt_player.make_move(game)
+    print(f"ttt_2_level control ({size=}), made move: {move}", file=sys.stderr)
     return 0
 
 def min_max(means: np.ndarray) -> int:
