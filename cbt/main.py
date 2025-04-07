@@ -2,7 +2,7 @@ import sys
 
 from cbt.gamemanager import GameManager
 import cbt.games.tictactoe as ttt
-import cbt.algorithms.CBT2 as CBT2
+from cbt.algorithms import CBT2
 
     # return 0
 
