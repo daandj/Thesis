@@ -2,6 +2,7 @@ from __future__ import annotations
 import copy
 from math import log, sqrt
 import random
+import sys
 from typing import Final
 
 from cbt.game import Game
@@ -46,20 +47,21 @@ class MCTSNode:
 
         return -self.r
 
-class MCTS:
     levels: int
     b: Game
 
-    def __init__(self, board: Game,
-                 levels: int = 2):
-        self.levels = levels
-        self.b = board
+    def __init__(self, game: Game,
+                 data_flag: bool = False,
+                 print_flag: bool = False):
+        self.b = game
+        self.data_flag = data_flag
+        self.print_flag = print_flag
 
     def run(self, iters: int = 1000) -> int:
 
         root = MCTSNode()
 
-        for _ in range(iters):
+        for i in range(iters):
             v = self.select(root)
 
             if len(self.missing_moves(v)) > 0:
@@ -67,6 +69,13 @@ class MCTS:
 
             res = self.simulate()
             self.backpropagate(v, res)
+
+            if self.data_flag:
+                print(f"{i} {res}")
+
+            if self.print_flag:
+                if i % 10000 == 0:
+                    print(f"t={i}", file=sys.stderr)
 
         best_child = max(root.children, key=lambda child: child.n)
         return best_child.prev_move
@@ -77,7 +86,7 @@ class MCTS:
             return v.reward(self.b)/v.n+k*sqrt(log(v.n_accent)/v.n)
 
         while not self.b.finished \
-            and len(self.missing_moves(v)) == 0 and v.depth < self.levels:
+            and len(self.missing_moves(v)) == 0:
             v = max(v.children, key=UCB1)
             self.b.do(v.prev_move)
         return v
