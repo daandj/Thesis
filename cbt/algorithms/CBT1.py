@@ -75,7 +75,7 @@ class CBandit:
     """
     Implements a contextual bandit algorithm for decision-making in the CBT framework.
     """
-    def __init__(self, nu: int = 10, gamma: float = 0.5) -> None:
+    def __init__(self, nu: float = 10.0, gamma: float = 0.5) -> None:
         self.nu = nu
         self.gamma = gamma
         self.rng = np.random.default_rng()
@@ -205,24 +205,23 @@ class CBT1:
 
     def __init__(self, game: Game,
                  data_flag: bool = False,
-                 print_flag: bool = False) -> None:
+                 print_flag: bool = False,
+                 exploration: float = 10.0,
+                 learning_rate: float = 1000.0) -> None:
         self.K: int = len(game.moves)
         self.moves = game.moves
         self.game = game
         self.print_data = data_flag
         self.print_flag = print_flag
-        self.cbandit = CBandit()
+        self.cbandit = CBandit(nu=exploration, gamma=learning_rate)
         self.ucb_bandit = UCBBandit()
+        self.exploration = exploration
+        self.learning_rate = learning_rate
 
     def run(self, iters: int = 10000) -> int:
         """
         Run the CBT algorithm for a specified number of iterations and return the best move.
         """
-        self.cbandit.nu = 100
-
-        self.cbandit.gamma = sqrt(
-            2*self.K*iters/self.regression_regret(iters)
-        )
 
         root = CBTNode()
         self.cbandit.initialize_node(root, self.game)
@@ -336,24 +335,36 @@ class CBT1:
         res = set(self.game.moves).difference(map(lambda child: child.prev_move, v.children))
         return list(res)
 
-    def regression_regret(self, t: int) -> float:
-        """
-        Calculate the regression regret for the given number of iterations.
-        """
-        return sqrt(t) # TODO: This, but correct.
-
 
 class CBT1Player(Player):
     iterations: int
+    nu: float
+    gamma: float
+    exploration: float
+    learning_rate: float
 
     def __init__(self, location, data_flag = False, print_flag = False):
         super().__init__(location, data_flag=data_flag, print_flag=print_flag)
         self.iterations = 1000
         if location != 0:
             raise ValueError("CBTMinimalPlayer can only be used for player 0")
+        self.exploration = 10.0
+        self.learning_rate = 1000.0
 
     def make_move(self, game: Game) -> int:
-        alg = CBT1(game, self.data_flag, self.print_flag)
+        alg = CBT1(game,
+            self.data_flag,
+            self.print_flag,
+            exploration=self.exploration,
+            learning_rate=self.learning_rate
+        )
 
         move = alg.run(self.iterations)
         return move
+
+    def set_parameters(self, exploration: float, learning_rate: float) -> None:
+        """
+        Set the parameters for the bandit algorithm.
+        """
+        self.exploration = exploration
+        self.learning_rate = learning_rate

@@ -14,7 +14,6 @@ Classes:
 
 from __future__ import annotations
 import copy
-from math import sqrt
 import random
 import sys
 import numpy as np
@@ -73,7 +72,7 @@ class CBandit:
     """
     Implements a contextual bandit algorithm for decision-making in the CBT framework.
     """
-    def __init__(self, nu: int = 10, gamma: float = 0.5) -> None:
+    def __init__(self, nu: float = 10, gamma: float = 0.5) -> None:
         self.nu = nu
         self.gamma = gamma
         self.rng = np.random.default_rng()
@@ -165,27 +164,26 @@ class CBT2:
     gamma: float
     game: Game
     player: int
+    exploration: float
+    learning_rate: float
 
     def __init__(self, game: Game,
                  data_flag: bool = False,
-                 print_flag: bool = False) -> None:
+                 print_flag: bool = False,
+                 exploration: float = 10.0,
+                 learning_rate: float = 1000.0) -> None:
         self.K: int = len(game.moves)
         self.moves = game.moves
         self.game = game
         self.print_data = data_flag
         self.print_flag = print_flag
-        self.bandit = CBandit()
+        self.bandit = CBandit(nu=exploration, gamma=learning_rate)
         self.player = 0
 
     def run(self, iters: int = 1000) -> int:
         """
         Run the CBT algorithm for a specified number of iterations and return the best move.
         """
-        self.bandit.nu = 50
-
-        self.bandit.gamma = 0.5 * sqrt(
-            2*self.K*iters/self.regression_regret(iters)
-        )
 
         root = CBTNode()
         self.bandit.initialize_node(root, self.game)
@@ -290,22 +288,33 @@ class CBT2:
         res = set(self.game.moves).difference(map(lambda child: child.prev_move, v.children))
         return list(res)
 
-    def regression_regret(self, t: int) -> float:
-        """
-        Calculate the regression regret for the given number of iterations.
-        """
-        return sqrt(t) # TODO: This, but correct.
-
-
 class CBT2Player(Player):
     iterations: int
+    exploration: float
+    learning_rate: float
 
     def __init__(self, location, data_flag = False, print_flag = False):
         super().__init__(location, data_flag=data_flag, print_flag=print_flag)
         self.iterations = 1000
+        self.exploration = 10.0
+        self.learning_rate = 1000.0
 
     def make_move(self, game: Game) -> int:
-        alg = CBT2(game, self.data_flag, self.print_flag)
+        alg = CBT2(
+            game,
+            self.data_flag,
+            self.print_flag,
+            self.exploration,
+            self.learning_rate
+        )
 
         move = alg.run(self.iterations)
         return move
+
+
+    def set_parameters(self, exploration: float, learning_rate: float) -> None:
+        """
+        Set the parameters for the bandit algorithm.
+        """
+        self.exploration = exploration
+        self.learning_rate = learning_rate

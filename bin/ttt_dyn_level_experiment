@@ -3,15 +3,20 @@
 import sys
 import numpy as np
 
+import settings # type: ignore
+
 import cbt.games.tictactoe as ttt
 import cbt.algorithms.CBT2 as cbt
 
 def main(size: int, iterations: int) -> int:
+    params = settings.parameters["ttt_dyn_level"]
     game = ttt.TicTacToe(print_flag=False)
     game.set_board_size(size)
 
     cbt_player = cbt.CBT2Player(0, data_flag=True, print_flag=False)
     cbt_player.iterations = iterations
+    cbt_player.set_parameters(params["exploration"], params["learning_rate"])
+
     move = cbt_player.make_move(game)
     print(f"ttt_2_level experiment ({size=}), made move: {move}", file=sys.stderr)
     return 0

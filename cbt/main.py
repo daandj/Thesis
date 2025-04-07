@@ -8,9 +8,10 @@ from cbt.algorithms import CBT2
 
 def minimal() -> int:
     game = ttt.TicTacToe(print_flag=False)
-    cbt2player = CBT2.CBT2Player(1, print_flag=False)
+    cbt2player = CBT2.CBT2Player(0, print_flag=False)
     cbt2player.iterations = 10000
-    gm = GameManager(game, ttt.MCTSPlayer(0), cbt2player,
+    cbt2player.set_parameters(10000.0, 1000.0)
+    gm = GameManager(game, cbt2player, ttt.HumanPlayer(1),
                      print_flag=False, data_flag=True)
     winner = gm.play()
 

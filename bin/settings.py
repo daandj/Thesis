@@ -1,6 +1,28 @@
 
 import numpy as np
 
+parameters = {
+    "10": {
+        "exploration": 100.0,
+        "learning_rate": 1000.0,
+    },
+    "20": {
+        "exploration": 100.0,
+        "learning_rate": 1000.0,
+    },
+    "30": {
+        "exploration": 100.0,
+        "learning_rate": 1000.0,
+    },
+    "ttt_2_level": {
+        "exploration": 100.0,
+        "learning_rate": 1000.0,
+    },
+    "ttt_dyn_level": {
+        "exploration": 10.0,
+        "learning_rate": 1.0,
+    }
+}
 
 means_10_10 = np.array([
     [0.75, 0.0 , 0.78, 0.22, 0.48, 0.06, 0.01, 0.32, 0.29, 0.1 ],
