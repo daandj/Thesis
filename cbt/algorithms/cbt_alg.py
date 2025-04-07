@@ -1,12 +1,33 @@
 import copy
 from math import sqrt, log
 import random
-from typing import Final
+from typing import Final, Protocol
 import numpy as np
 
-from cbt.algorithms.MCTS import MCTSNode, Board
+from cbt.algorithms.MCTS import MCTSNode
 
 # CBT class tries to maximise the outcome
+
+class Board(Protocol):
+    prev_player: int
+    @property
+    def finished(self) -> bool:
+        pass
+
+    @property
+    def moves(self) -> list[int]:
+        pass
+
+    @property
+    def points(self) -> float:
+        pass
+
+    def update(self, place: int) -> bool:
+        pass
+
+    def undo(self, place: int) -> None:
+        pass
+
 
 class Bandit:
     def __init__(self, nu: int, gamma: float) -> None:
