@@ -47,7 +47,7 @@ class MCTSNode:
 
         return -self.r
 
-    levels: int
+class MCTS:
     b: Game
 
     def __init__(self, game: Game,
