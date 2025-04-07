@@ -47,13 +47,19 @@ class HumanPlayer(Player):
             return int(input_str)
 
 class MCTSPlayer(Player):
+    iterations: int
+
+    def __init__(self, location, data_flag = False, print_flag = False):
+        super().__init__(location, data_flag, print_flag)
+        self.iterations = 1000
+
     def make_move(self, game: Game) -> int:
         if not isinstance(game, TicTacToe):
             raise RuntimeError("This player is only for TicTacToe")
 
-        alg = MCTS(game)
+        alg = MCTS(game, data_flag=self.data_flag, print_flag=self.print_flag)
 
-        move = alg.run()
+        move = alg.run(self.iterations)
         return move
 
 class CBTPlayer(Player):

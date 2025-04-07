@@ -2,27 +2,10 @@ from __future__ import annotations
 import copy
 from math import log, sqrt
 import random
-from typing import Final, Protocol
+import sys
+from typing import Final
 
-class Board(Protocol):
-    prev_player: int
-    @property
-    def finished(self) -> bool:
-        pass
-
-    @property
-    def moves(self) -> list[int]:
-        pass
-
-    @property
-    def points(self) -> float:
-        pass
-
-    def update(self, place: int) -> bool:
-        pass
-
-    def undo(self, place: int) -> None:
-        pass
+from cbt.game import Game
 
 class MCTSNode:
     n: int
@@ -55,27 +38,30 @@ class MCTSNode:
         self.parent = parent
         self.depth = self.parent.depth+1
 
-    def reward(self, b: Board) -> float:
-        if b.prev_player == 0:
+    def reward(self, b: Game) -> float:
+        if b.player == 0: # This gives an error, because the player is not
+            # exposed. However, most game do have the variable.
+            # TODO: Rewrite this to use the return values of `do()` and `undo()`
+            # instead of the player variable.
             return self.r
 
         return -self.r
 
-
 class MCTS:
-    levels: int
-    b: Board
+    b: Game
 
-    def __init__(self, board: Board,
-                 levels: int = 2):
-        self.levels = levels
-        self.b = board
+    def __init__(self, game: Game,
+                 data_flag: bool = False,
+                 print_flag: bool = False):
+        self.b = game
+        self.data_flag = data_flag
+        self.print_flag = print_flag
 
     def run(self, iters: int = 1000) -> int:
 
         root = MCTSNode()
 
-        for _ in range(iters):
+        for i in range(iters):
             v = self.select(root)
 
             if len(self.missing_moves(v)) > 0:
@@ -83,6 +69,13 @@ class MCTS:
 
             res = self.simulate()
             self.backpropagate(v, res)
+
+            if self.data_flag:
+                print(f"{i} {res}")
+
+            if self.print_flag:
+                if i % 10000 == 0:
+                    print(f"t={i}", file=sys.stderr)
 
         best_child = max(root.children, key=lambda child: child.n)
         return best_child.prev_move
@@ -93,9 +86,9 @@ class MCTS:
             return v.reward(self.b)/v.n+k*sqrt(log(v.n_accent)/v.n)
 
         while not self.b.finished \
-            and len(self.missing_moves(v)) == 0 and v.depth < self.levels:
+            and len(self.missing_moves(v)) == 0:
             v = max(v.children, key=UCB1)
-            self.b.update(v.prev_move)
+            self.b.do(v.prev_move)
         return v
 
     def expand(self, v: MCTSNode) -> MCTSNode:
@@ -104,7 +97,7 @@ class MCTS:
         new_move = random.choice(moves)
         v = v.add_child(new_move)
 
-        self.b.update(v.prev_move)
+        self.b.do(v.prev_move)
         return v
 
     # Update visitations and scores in the entire tree
@@ -121,18 +114,18 @@ class MCTS:
                 child.n_accent += 1
 
             if node.parent is not None:
-                self.b.undo(node.prev_move)
+                self.b.undo()
 
             node = node.parent
 
 
     # Simulate the rest of this determinization and return the end score.
     def simulate(self) -> float:
-        board: Board = copy.deepcopy(self.b)
+        board: Game = copy.deepcopy(self.b)
         while not board.finished:
             moves: list[int] = list(board.moves)
             next_move: int = random.choice(moves)
-            board.update(next_move)
+            board.do(next_move)
 
         score = board.points
 
