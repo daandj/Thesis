@@ -19,8 +19,8 @@ parameters = {
         "learning_rate": 1000.0,
     },
     "ttt_dyn_level": {
-        "exploration": 10.0,
-        "learning_rate": 1.0,
+        "exploration": 1000.0,
+        "learning_rate": 10.0,
     }
 }
 

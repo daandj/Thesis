@@ -10,9 +10,12 @@ def minimal() -> int:
     game = ttt.TicTacToe(print_flag=False)
     cbt2player = CBT2.CBT2Player(0, print_flag=False)
     cbt2player.iterations = 10000
-    cbt2player.set_parameters(10000.0, 1000.0)
-    gm = GameManager(game, cbt2player, ttt.HumanPlayer(1),
-                     print_flag=False, data_flag=True)
+    cbt2player.set_parameters(10.0, 1.0)
+    cbt2player2 = CBT2.CBT2Player(0, print_flag=False)
+    cbt2player2.iterations = 10000
+    cbt2player2.set_parameters(10.0, 1.0)
+    gm = GameManager(game, cbt2player, cbt2player2,
+                     print_flag=True, data_flag=False)
     winner = gm.play()
 
     print(f"The outcome is {gm.points} and winner is player {winner}")
