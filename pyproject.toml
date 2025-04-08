@@ -28,5 +28,8 @@ disable = [
     "fixme",
     "invalid-name",
     "too-few-public-methods",
+    "too-many-instance-attributes",
+    "too-many-arguments",
+    "too-many-positional-arguments",
     "duplicate-code",
 ]
