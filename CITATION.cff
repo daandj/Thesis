@@ -9,7 +9,8 @@ message: >-
 type: software
 authors:
   - given-names: Daan
-    family-names: De Jong
+    family-names: Jong
     email: daanvulkaan@gmail.com
-    name-particle: Daan
+    name-particle: de
 repository-code: 'https://github.com/daandj/Thesis'
+date-released: '2025-04-30'
