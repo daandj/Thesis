@@ -1,0 +1,15 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Contextual Bandits for Tree search
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Daan
+    family-names: De Jong
+    email: daanvulkaan@gmail.com
+    name-particle: Daan
+repository-code: 'https://github.com/daandj/Thesis'
