@@ -16,9 +16,9 @@ mkdir -p plt
 # bin/minimal_control 20 100000 | awk -f bin/make_aggregate.awk > data/minimal_20_ucb.dat
 
 # echo "Running minimal experiment (30x30)"
-# bin/minimal_experiment 30 500000 | awk -f bin/make_aggregate.awk > data/minimal_30_cbt.dat
+# bin/minimal_experiment 30 200000 | awk -f bin/make_aggregate.awk > data/minimal_30_cbt.dat
 # echo "Running minimal control (30x30)"
-# bin/minimal_control 30 500000 | awk -f bin/make_aggregate.awk > data/minimal_30_ucb.dat
+# bin/minimal_control 30 200000 | awk -f bin/make_aggregate.awk > data/minimal_30_ucb.dat
 
 # Then run the TicTacToe experiment
 # echo "Running TicTacToe experiment (3x3)"
@@ -37,11 +37,11 @@ mkdir -p plt
 # bin/ttt_2_level_control 10 20000 | awk -f bin/make_aggregate.awk > data/ttt_2_level_10_ucb.dat
 
 # Now work with dynamic level CBT (CBT2)
-# Run the TicTacToe experiment
-echo "Running dynamic depth TicTacToe experiment (3x3)"
-bin/ttt_dyn_level_experiment 3 100000 | awk -f bin/make_aggregate.awk > data/ttt_dyn_level_3_cbt.dat
-echo "Running dynamic depth TicTacToe control (3x3)"
-bin/ttt_dyn_level_control 3 100000 | awk -f bin/make_aggregate.awk > data/ttt_dyn_level_3_ucb.dat
+# # Run the TicTacToe experiment
+# echo "Running dynamic depth TicTacToe experiment (3x3)"
+# bin/ttt_dyn_level_experiment 3 100000 | awk -f bin/make_aggregate.awk > data/ttt_dyn_level_3_cbt.dat
+# echo "Running dynamic depth TicTacToe control (3x3)"
+# bin/ttt_dyn_level_control 3 100000 | awk -f bin/make_aggregate.awk > data/ttt_dyn_level_3_ucb.dat
 
 # echo "Running dynamic depth TicTacToe experiment (5x5)"
 # bin/ttt_dyn_level_experiment 5 100000 | awk -f bin/make_aggregate.awk > data/ttt_dyn_level_5_cbt.dat
@@ -52,6 +52,20 @@ bin/ttt_dyn_level_control 3 100000 | awk -f bin/make_aggregate.awk > data/ttt_dy
 # bin/ttt_dyn_level_experiment 10 100000 | awk -f bin/make_aggregate.awk > data/ttt_dyn_level_10_cbt.dat
 # echo "Running dynamic depth TicTacToe control (10x10)"
 # bin/ttt_dyn_level_control 10 100000 | awk -f bin/make_aggregate.awk > data/ttt_dyn_level_10_ucb.dat
+
+echo "Testing exploration parameter with minimal game (10x10)"
+echo "nu=10, gamma=1000"
+bin/parameter_experiment 10000 10 1000 | awk -f bin/make_aggregate.awk > data/parameter_10_1000.dat
+echo "nu=50, gamma=1000"
+bin/parameter_experiment 10000 50 1000 | awk -f bin/make_aggregate.awk > data/parameter_50_1000.dat
+echo "nu=100, gamma=1000"
+bin/parameter_experiment 10000 100 1000 | awk -f bin/make_aggregate.awk > data/parameter_100_1000.dat
+echo "nu=150, gamma=1000"
+bin/parameter_experiment 10000 150 1000 | awk -f bin/make_aggregate.awk > data/parameter_150_1000.dat
+echo "nu=200, gamma=1000"
+bin/parameter_experiment 10000 200 1000 | awk -f bin/make_aggregate.awk > data/parameter_200_1000.dat
+echo "nu=250, gamma=1000"
+bin/parameter_experiment 10000 250 1000 | awk -f bin/make_aggregate.awk > data/parameter_250_1000.dat
 
 # Then make plots from the data
 echo "Making plots from data..."
@@ -66,3 +80,5 @@ gnuplot -c bin/plot_settings.gp ttt_2_level_10
 gnuplot -c bin/plot_settings.gp ttt_dyn_level_3
 gnuplot -c bin/plot_settings.gp ttt_dyn_level_5
 gnuplot -c bin/plot_settings.gp ttt_dyn_level_10
+
+gnuplot -c bin/plot_exploration.gp
