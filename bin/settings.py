@@ -3,16 +3,16 @@ import numpy as np
 
 parameters = {
     "10": {
-        "exploration": 100.0,
-        "learning_rate": 1000.0,
+        "exploration": 10.0,
+        "learning_rate": 1175.0,
     },
     "20": {
-        "exploration": 100.0,
-        "learning_rate": 1000.0,
+        "exploration": 20.0,
+        "learning_rate": 1662.0,
     },
     "30": {
-        "exploration": 100.0,
-        "learning_rate": 1000.0,
+        "exploration": 30.0,
+        "learning_rate": 2035.0,
     },
     "ttt_2_level": {
         "exploration": 100.0,
