@@ -6,19 +6,19 @@ mkdir -p plt
 
 # First run the minimal experiment
 # echo "Running minimal experiment (10x10)"
-# bin/minimal_experiment 10 > data/minimal_10_cbt.dat
+# bin/minimal_experiment 10 100000 | awk -f bin/make_aggregate.awk > data/minimal_10_cbt.dat
 # echo "Running minimal control (10x10)"
-# bin/minimal_control 10 > data/minimal_10_ucb.dat
+# bin/minimal_control 10 100000 | awk -f bin/make_aggregate.awk > data/minimal_10_ucb.dat
 
-echo "Running minimal experiment (20x20)"
-bin/minimal_experiment 20 > data/minimal_20_cbt.dat
-echo "Running minimal control (20x20)"
-bin/minimal_control 20 > data/minimal_20_ucb.dat
+# echo "Running minimal experiment (20x20)"
+# bin/minimal_experiment 20 100000 | awk -f bin/make_aggregate.awk > data/minimal_20_cbt.dat
+# echo "Running minimal control (20x20)"
+# bin/minimal_control 20 100000 | awk -f bin/make_aggregate.awk > data/minimal_20_ucb.dat
 
-echo "Running minimal experiment (30x30)"
-bin/minimal_experiment 30 > data/minimal_30_cbt.dat
-echo "Running minimal control (30x30)"
-bin/minimal_control 30 > data/minimal_30_ucb.dat
+# echo "Running minimal experiment (30x30)"
+# bin/minimal_experiment 30 100000 | awk -f bin/make_aggregate.awk > data/minimal_30_cbt.dat
+# echo "Running minimal control (30x30)"
+# bin/minimal_control 30 100000 | awk -f bin/make_aggregate.awk > data/minimal_30_ucb.dat
 
 # Then run the TicTacToe experiment
 # echo "Running TicTacToe experiment (3x3)"
@@ -31,10 +31,10 @@ bin/minimal_control 30 > data/minimal_30_ucb.dat
 # echo "Running TicTacToe control (5x5)"
 # bin/ttt_2_level_control 5 10000 | awk -f bin/make_aggregate.awk > data/ttt_2_level_5_ucb.dat
 
-# echo "Running TicTacToe experiment (10x10)"
-# bin/ttt_2_level_experiment 10 10000 | awk -f bin/make_aggregate.awk > data/ttt_2_level_10_cbt.dat
-# echo "Running TicTacToe control (10x10)"
-# bin/ttt_2_level_control 10 10000 | awk -f bin/make_aggregate.awk > data/ttt_2_level_10_ucb.dat
+echo "Running TicTacToe experiment (10x10)"
+bin/ttt_2_level_experiment 10 10000 | awk -f bin/make_aggregate.awk > data/ttt_2_level_10_cbt.dat
+echo "Running TicTacToe control (10x10)"
+bin/ttt_2_level_control 10 10000 | awk -f bin/make_aggregate.awk > data/ttt_2_level_10_ucb.dat
 
 # Now work with dynamic level CBT (CBT2)
 # Run the TicTacToe experiment
@@ -83,17 +83,17 @@ bin/minimal_control 30 > data/minimal_30_ucb.dat
 
 # Then make plots from the data
 echo "Making plots from data..."
-gnuplot -c bin/plot_settings_new.gp minimal_10
-gnuplot -c bin/plot_settings_new.gp minimal_20
-gnuplot -c bin/plot_settings_new.gp minimal_30
+gnuplot -c bin/plot_settings.gp minimal_10
+gnuplot -c bin/plot_settings.gp minimal_20
+gnuplot -c bin/plot_settings.gp minimal_30
 
-# gnuplot -c bin/plot_settings.gp ttt_2_level_3
-# gnuplot -c bin/plot_settings.gp ttt_2_level_5
-# gnuplot -c bin/plot_settings.gp ttt_2_level_10
+gnuplot -c bin/plot_settings.gp ttt_2_level_3
+gnuplot -c bin/plot_settings.gp ttt_2_level_5
+gnuplot -c bin/plot_settings.gp ttt_2_level_10
 
-# gnuplot -c bin/plot_settings.gp ttt_dyn_level_3
-# gnuplot -c bin/plot_settings.gp ttt_dyn_level_5
-# gnuplot -c bin/plot_settings.gp ttt_dyn_level_10
+gnuplot -c bin/plot_settings.gp ttt_dyn_level_3
+gnuplot -c bin/plot_settings.gp ttt_dyn_level_5
+gnuplot -c bin/plot_settings.gp ttt_dyn_level_10
 
-# gnuplot -c bin/plot_exploration.gp
-# gnuplot -c bin/plot_learning.gp
+gnuplot -c bin/plot_exploration.gp
+gnuplot -c bin/plot_learning.gp

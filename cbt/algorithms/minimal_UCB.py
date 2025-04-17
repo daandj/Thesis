@@ -140,6 +140,7 @@ class UCBMinimal:
     nu: float
     gamma: float
     game: Game
+    wins: int
 
     def __init__(self, game: Game,
                  data_flag: bool = False,
@@ -150,6 +151,7 @@ class UCBMinimal:
         self.print_data = data_flag
         self.print_flag = print_flag
         self.bandit = UCBBandit()
+        self.wins = 0
 
     def run(self, iters: int = 10000) -> int:
         """
@@ -173,6 +175,8 @@ class UCBMinimal:
             if self.print_flag:
                 if i % 10000 == 0:
                     print(f"t={i}", file=sys.stderr)
+
+            self.wins += res
 
         # TODO: Think about what to return
         best_child = max(root.children, key=lambda child: child.n)
@@ -271,6 +275,8 @@ class UCBMinimal:
         return sqrt(t) # TODO: This, but correct.
 
 class UCBPlayer(Player):
+    alg: UCBMinimal
+
     def __init__(self, location, data_flag = False, print_flag: bool = False):
         super().__init__(location, data_flag=data_flag, print_flag=print_flag)
         self.iterations = 1000
@@ -278,6 +284,13 @@ class UCBPlayer(Player):
             raise ValueError("UCBMinimalPlayer can only be used for player 0")
 
     def make_move(self, game: Game) -> int:
-        alg = UCBMinimal(game, data_flag=self.data_flag, print_flag=self.print_flag)
-        move = alg.run(self.iterations)
+        self.alg = UCBMinimal(game, data_flag=self.data_flag, print_flag=self.print_flag)
+        move = self.alg.run(self.iterations)
         return move
+
+    @property
+    def win_rate(self) -> float:
+        """
+        Calculate the win rate of the player.
+        """
+        return self.alg.wins / self.iterations

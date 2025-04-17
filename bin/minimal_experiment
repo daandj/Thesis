@@ -7,7 +7,7 @@ import numpy as np
 import cbt.games.minimal as mg
 import cbt.algorithms.CBT1 as cbt
 
-def main(size: int, iterations: int) -> int:
+def main(size: int, reps: int = 10) -> int:
     if size == 10:
         means = settings.means_10_10
         params = settings.parameters["10"]
@@ -20,14 +20,20 @@ def main(size: int, iterations: int) -> int:
     else:
         raise ValueError("Invalid size. Use 10, 20 or 30.")
 
-    game = mg.Minimal(means=means)
+    for iterations in [10,100,1000,10000,100000]:
+        outcomes = [0.0] * reps
+        for i in range(reps):
+            game = mg.Minimal(means=means)
 
-    cbt_player = cbt.CBT1Player(0, data_flag=True, print_flag=False)
-    cbt_player.iterations = iterations
-    cbt_player.set_parameters(params["exploration"], params["learning_rate"])
+            cbt_player = cbt.CBT1Player(0, data_flag=False, print_flag=False)
+            cbt_player.iterations = iterations
+            cbt_player.set_parameters(params["exploration"], params["learning_rate"])
 
-    move = cbt_player.make_move(game)
-    print(f"Minimal experiment ({size=}), made move: {move}", file=sys.stderr)
+            move = cbt_player.make_move(game)
+            print(f"Minimal experiment ({size=},{iterations=}), made move: {move}", file=sys.stderr)
+
+            outcomes[i] = cbt_player.win_rate
+        print(f"{iterations} {sum(outcomes) / reps} {min(outcomes)} {max(outcomes)}")
     return 0
 
 def min_max(means: np.ndarray) -> int:
@@ -36,6 +42,5 @@ def min_max(means: np.ndarray) -> int:
 
 if __name__ == '__main__':
     s = int(sys.argv[1])
-    iters = int(sys.argv[2])
 
-    sys.exit(main(s, iters))
+    sys.exit(main(s))
