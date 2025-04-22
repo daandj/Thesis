@@ -2,21 +2,33 @@
 import numpy as np
 
 parameters = {
-    "10": {
+    10: {
         "exploration": 10.0,
         "learning_rate": 1175.0,
     },
-    "20": {
+    20: {
         "exploration": 20.0,
         "learning_rate": 1662.0,
     },
-    "30": {
+    30: {
         "exploration": 30.0,
         "learning_rate": 2035.0,
     },
     "ttt_2_level": {
         "exploration": 100.0,
-        "learning_rate": 1000.0,
+        "learning_rate": 1175.0,
+        3: {
+            "exploration": 9.0,
+            "learning_rate": 1175.0,
+        },
+        5: {
+            "exploration": 25.0,
+            "learning_rate": 1662.0,
+        },
+        10: {
+            "exploration": 100.0,
+            "learning_rate": 2035.0,
+        },
     },
     "ttt_dyn_level": {
         "exploration": 1000.0,
