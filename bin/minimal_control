@@ -31,11 +31,12 @@ def main(size: int, reps: int = 10) -> int:
             outcomes[i] = ucb_player.win_rate
             game.reset()
         print(f"{iterations} {sum(outcomes) / reps} {min(outcomes)} {max(outcomes)}")
+
+    print(f"minimal control {size=},min_max={min_max(means)}", file=sys.stderr)
     return 0
 
-def min_max(means: np.ndarray) -> int:
-    print(f"minmax={means.min(axis=1).max()}", file=sys.stderr)
-    return 0
+def min_max(means: np.ndarray) -> float:
+    return means.min(axis=1).max()
 
 if __name__ == '__main__':
     s = int(sys.argv[1])

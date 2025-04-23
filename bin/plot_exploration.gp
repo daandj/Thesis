@@ -11,16 +11,12 @@ set terminal pngcairo size 1000,800 font ",24"
 set output 'plt/parameter_exploration.png'
 set grid
 set ytics
-# set xtics 0,((x_max+1)/5)
 
 set logscale x
 
-set yrange [0:1]
+# set yrange [0:1]
 set xlabel 'Number of repetitions'
 set ylabel 'Average gain'
-
-set style fill transparent solid 0.7
-set style fill noborder # no separate top/bottom lines
 
 plot exp_10 using 1:2 with lines lc "green" lw 2 title "Exploration rate = 10", \
      exp_50 using 1:2 with lines lc "blue" lw 2 title "Exploration rate = 50", \

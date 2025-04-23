@@ -6,21 +6,21 @@ mkdir -p plt
 
 # First run the minimal experiment
 # echo "Running minimal experiment (10x10)"
-# bin/minimal_experiment 10 > data/minimal_10_cbt.dat &
-# echo "Running minimal control (10x10)"
-# bin/minimal_control 10 > data/minimal_10_ucb.dat &
+# bin/minimal_experiment 10 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/minimal_10_cbt.dat &
+# # echo "Running minimal control (10x10)"
+# bin/minimal_control 10 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/minimal_10_ucb.dat &
 
-# echo "Running minimal experiment (20x20)"
-# bin/minimal_experiment 20 & > data/minimal_20_cbt.dat &
-# echo "Running minimal control (20x20)"
-# bin/minimal_control 20 > data/minimal_20_ucb.dat &
+# # echo "Running minimal experiment (20x20)"
+# bin/minimal_experiment 20 | awk -v mean=0.21 -f bin/subtract_mean.awk > data/minimal_20_cbt.dat &
+# # echo "Running minimal control (20x20)"
+# bin/minimal_control 20 | awk -v mean=0.21 -f bin/subtract_mean.awk > data/minimal_20_ucb.dat &
 
-# echo "Running minimal experiment (30x30)"
-# bin/minimal_experiment 30 > data/minimal_30_cbt.dat &
-# echo "Running minimal control (30x30)"
-# bin/minimal_control 30 > data/minimal_30_ucb.dat &
+# # echo "Running minimal experiment (30x30)"
+# bin/minimal_experiment 30 | awk -v mean=0.11 -f bin/subtract_mean.awk > data/minimal_30_cbt.dat &
+# # echo "Running minimal control (30x30)"
+# bin/minimal_control 30 | awk -v mean=0.11 -f bin/subtract_mean.awk > data/minimal_30_ucb.dat &
 
-# wait
+wait
 
 # # Then run the TicTacToe experiment
 # echo "Running TicTacToe experiment (3x3)"
@@ -38,7 +38,7 @@ mkdir -p plt
 # echo "Running TicTacToe control (10x10)"
 # bin/ttt_2_level_control 10 > data/ttt_2_level_10_ucb.dat &
 
-# wait
+wait
 
 # Now work with dynamic level CBT (CBT2)
 # Run the TicTacToe experiment
@@ -59,17 +59,17 @@ mkdir -p plt
 
 # echo "Testing exploration parameter with minimal game (10x10)"
 # echo "nu=10, gamma=1000"
-# bin/parameter_experiment 10 1000 > data/parameter_10_1000.dat &
+# bin/parameter_experiment 10 1000 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_1000.dat &
 # echo "nu=50, gamma=1000"
-# bin/parameter_experiment 50 1000 > data/parameter_50_1000.dat &
+# bin/parameter_experiment 50 1000 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_50_1000.dat &
 # echo "nu=100, gamma=1000"
-# bin/parameter_experiment 100 1000 > data/parameter_100_1000.dat &
+# bin/parameter_experiment 100 1000 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_100_1000.dat &
 # echo "nu=150, gamma=1000"
-# bin/parameter_experiment 150 1000 > data/parameter_150_1000.dat &
+# bin/parameter_experiment 150 1000 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_150_1000.dat &
 # echo "nu=200, gamma=1000"
-# bin/parameter_experiment 200 1000 > data/parameter_200_1000.dat &
+# bin/parameter_experiment 200 1000 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_200_1000.dat &
 # echo "nu=250, gamma=1000"
-# bin/parameter_experiment 250 1000 > data/parameter_250_1000.dat &
+# bin/parameter_experiment 250 1000 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_250_1000.dat &
 
 # echo "Testing learning rate with minimal game (10x10)"
 # echo "nu=10, gamma=0"
@@ -85,7 +85,7 @@ mkdir -p plt
 # echo "nu=10, gamma=2500"
 # bin/parameter_experiment 10 2500 > data/parameter_10_2500.dat &
 
-# wait
+wait
 
 # Then make plots from the data
 echo "Making plots from data..."
