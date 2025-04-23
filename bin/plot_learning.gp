@@ -22,13 +22,7 @@ set ylabel 'Average gain'
 set style fill transparent solid 0.7
 set style fill noborder # no separate top/bottom lines
 
-plot learning_0 using 1:3:4 lc "light-green" lw 1 with filledcurves notitle, \
-     learning_500 using 1:3:4 lc "light-blue" lw 1 notitle with filledcurves, \
-     learning_1000 using 1:3:4 lc "light-red" lw 1 notitle with filledcurves, \
-     learning_1500 using 1:3:4 lc "light-pink" lw 1 notitle with filledcurves, \
-     learning_2000 using 1:3:4 lc "light-magenta" lw 1 notitle with filledcurves, \
-     learning_2500 using 1:3:4 lc "light-grey" lw 1 notitle with filledcurves, \
-     learning_0 using 1:2 lc "green" lw 5 with lines title "Learning rate = 0", \
+plot learning_0 using 1:2 lc "green" lw 5 with lines title "Learning rate = 0", \
      learning_500 using 1:2 lc "blue" lw 5 with lines title "Learning rate = 500", \
      learning_1000 using 1:2 lc "red" lw 5 with lines title "Learning rate = 1000", \
      learning_1500 using 1:2 lc "pink" lw 5 with lines title "Learning rate = 1500", \

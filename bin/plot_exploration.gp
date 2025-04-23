@@ -7,7 +7,7 @@ exp_250 = "data/parameter_250_1000.dat"
 
 stats exp_10 using 1 name 'x' nooutput
 
-set terminal pngcairo size 2000,1600 font ",48"
+set terminal pngcairo size 1000,800 font ",24"
 set output 'plt/parameter_exploration.png'
 set grid
 set ytics
@@ -22,15 +22,9 @@ set ylabel 'Average gain'
 set style fill transparent solid 0.7
 set style fill noborder # no separate top/bottom lines
 
-plot exp_10 using 1:3:4 lc "light-green" lw 1 with filledcurves notitle, \
-     exp_50 using 1:3:4 lc "light-blue" lw 1 notitle with filledcurves, \
-     exp_100 using 1:3:4 lc "light-red" lw 1 notitle with filledcurves, \
-     exp_150 using 1:3:4 lc "light-pink" lw 1 notitle with filledcurves, \
-     exp_200 using 1:3:4 lc "light-magenta" lw 1 notitle with filledcurves, \
-     exp_250 using 1:3:4 lc "light-grey" lw 1 notitle with filledcurves, \
-     exp_10 using 1:2 lc "green" lw 5 with lines title "Exploration rate = 10", \
-     exp_50 using 1:2 lc "blue" lw 5 with lines title "Exploration rate = 50", \
-     exp_100 using 1:2 lc "red" lw 5 with lines title "Exploration rate = 100", \
-     exp_150 using 1:2 lc "pink" lw 5 with lines title "Exploration rate = 150", \
-     exp_200 using 1:2 lc "magenta" lw 5 with lines title "Exploration rate = 200", \
-     exp_250 using 1:2 lc "grey" lw 5 with lines title "Exploration rate = 250"
+plot exp_10 using 1:2 with lines lc "green" lw 2 title "Exploration rate = 10", \
+     exp_50 using 1:2 with lines lc "blue" lw 2 title "Exploration rate = 50", \
+     exp_100 using 1:2 with lines lc "red" lw 2  title "Exploration rate = 100", \
+     exp_150 using 1:2 with lines lc "pink" lw 2  title "Exploration rate = 150", \
+     exp_200 using 1:2 with lines lc "magenta" lw 2  title "Exploration rate = 200", \
+     exp_250 using 1:2 with lines lc "grey" lw 2  title "Exploration rate = 250"
