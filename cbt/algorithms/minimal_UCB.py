@@ -153,7 +153,7 @@ class UCBMinimal:
         self.bandit = UCBBandit()
         self.wins = 0
 
-    def run(self, iters: int = 10000) -> int:
+    def run(self, iters: int = 10000) -> dict[int, int]:
         """
         Run the CBT algorithm for a specified number of iterations and return the best move.
         """
@@ -179,11 +179,10 @@ class UCBMinimal:
             self.wins += res
 
         # TODO: Think about what to return
-        best_child = max(root.children, key=lambda child: child.n)
 
         if self.print_flag:
             root.print_tree()
-        return best_child.prev_move
+        return {child.prev_move: child.n for child in root.children}
 
     def select(self, v: CBTNode) -> CBTNode:
         """
@@ -276,6 +275,7 @@ class UCBMinimal:
 
 class UCBPlayer(Player):
     alg: UCBMinimal
+    move_history: dict[int, int]
 
     def __init__(self, location, data_flag = False, print_flag: bool = False):
         super().__init__(location, data_flag=data_flag, print_flag=print_flag)
@@ -283,10 +283,13 @@ class UCBPlayer(Player):
         if location != 0:
             raise ValueError("UCBMinimalPlayer can only be used for player 0")
 
+        self.move_history = {}
+
     def make_move(self, game: Game) -> int:
         self.alg = UCBMinimal(game, data_flag=self.data_flag, print_flag=self.print_flag)
-        move = self.alg.run(self.iterations)
-        return move
+
+        self.move_history = self.alg.run(self.iterations)
+        return max(self.move_history, key=lambda key: self.move_history[key])
 
     @property
     def win_rate(self) -> float:

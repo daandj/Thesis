@@ -7,7 +7,7 @@ mkdir -p plt
 # First run the minimal experiment
 # echo "Running minimal experiment (10x10)"
 # bin/minimal_experiment 10 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/minimal_10_cbt.dat &
-# # echo "Running minimal control (10x10)"
+# echo "Running minimal control (10x10)"
 # bin/minimal_control 10 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/minimal_10_ucb.dat &
 
 # # echo "Running minimal experiment (20x20)"
@@ -19,6 +19,10 @@ mkdir -p plt
 # bin/minimal_experiment 30 | awk -v mean=0.11 -f bin/subtract_mean.awk > data/minimal_30_cbt.dat &
 # # echo "Running minimal control (30x30)"
 # bin/minimal_control 30 | awk -v mean=0.11 -f bin/subtract_mean.awk > data/minimal_30_ucb.dat &
+
+# echo "Running best move experiment"
+# bin/best_move_experiment 10 > data/best_move_10_cbt.dat &
+# bin/best_move_control 10 > data/best_move_10_ucb.dat &
 
 wait
 
@@ -103,3 +107,5 @@ gnuplot -c bin/plot_settings_new.gp ttt_2_level_10
 
 gnuplot -c bin/plot_exploration.gp
 gnuplot -c bin/plot_learning.gp
+
+gnuplot -c bin/plot_best_move.gp best_move_10

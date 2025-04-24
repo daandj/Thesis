@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+
+import sys
+import settings # type: ignore
+import numpy as np
+
+import cbt.games.minimal as mg
+import cbt.algorithms.CBT1 as cbt
+
+def main(size: int, reps: int = 10) -> int:
+    if size == 10:
+        means = settings.means_10_10
+        params = settings.parameters[size]
+        best_move = settings.best_move_10_10
+    elif size == 20:
+        means = settings.means_20_20
+        params = settings.parameters[size]
+        best_move = settings.best_move_20_20
+    elif size == 30:
+        means = settings.means_30_30
+        params = settings.parameters[size]
+        best_move = settings.best_move_30_30
+    else:
+        raise ValueError("Invalid size. Use 10, 20 or 30.")
+
+    for iterations in [10,100,1000,10000,100000]:
+        outcomes = [0.0] * reps
+        for i in range(reps):
+            game = mg.Minimal(means=means)
+
+            cbt_player = cbt.CBT1Player(0, data_flag=False, print_flag=False)
+            cbt_player.iterations = iterations
+            cbt_player.set_parameters(params["exploration"], params["learning_rate"])
+
+            move = cbt_player.make_move(game)
+            print(f"Best move experiment ({size=},{iterations=},{i=}), made move: {move}",
+                  file=sys.stderr)
+
+            outcomes[i] = cbt_player.move_history[best_move] / iterations
+        print(f"{iterations} {sum(outcomes) / reps} "
+              f"{min(outcomes)} {max(outcomes)}")
+    return 0
+
+def min_max(means: np.ndarray) -> int:
+    print(f"minmax={means.min(axis=1).max()}", file=sys.stderr)
+    return 0
+
+if __name__ == '__main__':
+    s = int(sys.argv[1])
+
+    sys.exit(main(s))
