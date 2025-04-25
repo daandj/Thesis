@@ -36,7 +36,7 @@ def main(size: int, reps: int = 10) -> int:
         print(f"{iterations} {sum(outcomes) / reps} "
               f"{min(outcomes)} {max(outcomes)}")
 
-    print(f"minimal control {size=},min_max={min_max(means)}", file=sys.stderr)
+    print(f"Best move control {size=},min_max={min_max(means)}", file=sys.stderr)
     return 0
 
 def min_max(means: np.ndarray) -> float:

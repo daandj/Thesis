@@ -23,6 +23,11 @@ mkdir -p plt
 # echo "Running best move experiment"
 # bin/best_move_experiment 10 > data/best_move_10_cbt.dat &
 # bin/best_move_control 10 > data/best_move_10_ucb.dat &
+# bin/best_move_experiment 20 > data/best_move_20_cbt.dat &
+# bin/best_move_control 20 > data/best_move_20_ucb.dat &
+# bin/best_move_experiment 30 > data/best_move_30_cbt.dat &
+# bin/best_move_control 30 > data/best_move_30_ucb.dat &
+
 
 wait
 
@@ -109,3 +114,5 @@ gnuplot -c bin/plot_exploration.gp
 gnuplot -c bin/plot_learning.gp
 
 gnuplot -c bin/plot_best_move.gp best_move_10
+gnuplot -c bin/plot_best_move.gp best_move_20
+gnuplot -c bin/plot_best_move.gp best_move_30
