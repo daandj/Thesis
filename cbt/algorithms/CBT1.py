@@ -202,6 +202,7 @@ class CBT1:
     nu: float
     gamma: float
     game: Game
+    wins: int
 
     def __init__(self, game: Game,
                  data_flag: bool = False,
@@ -217,8 +218,9 @@ class CBT1:
         self.ucb_bandit = UCBBandit()
         self.exploration = exploration
         self.learning_rate = learning_rate
+        self.wins = 0
 
-    def run(self, iters: int = 10000) -> int:
+    def run(self, iters: int = 10000) -> dict[int, int]:
         """
         Run the CBT algorithm for a specified number of iterations and return the best move.
         """
@@ -243,10 +245,11 @@ class CBT1:
                 if i % 10000 == 0:
                     print(f"t={i}", file=sys.stderr)
 
-        # TODO: Think about what to return
-        best_child = max(root.children, key=lambda child: child.n)
+            self.wins += res
 
-        return best_child.prev_move
+        # TODO: Think about what to return
+
+        return {child.prev_move: child.n for child in root.children}
 
     def select(self, v: CBTNode) -> CBTNode:
         """
@@ -342,6 +345,8 @@ class CBT1Player(Player):
     gamma: float
     exploration: float
     learning_rate: float
+    alg: CBT1
+    move_history: dict[int, int]
 
     def __init__(self, location, data_flag = False, print_flag = False):
         super().__init__(location, data_flag=data_flag, print_flag=print_flag)
@@ -350,17 +355,18 @@ class CBT1Player(Player):
             raise ValueError("CBTMinimalPlayer can only be used for player 0")
         self.exploration = 10.0
         self.learning_rate = 1000.0
+        self.move_history = {}
 
     def make_move(self, game: Game) -> int:
-        alg = CBT1(game,
+        self.alg = CBT1(game,
             self.data_flag,
             self.print_flag,
             exploration=self.exploration,
             learning_rate=self.learning_rate
         )
 
-        move = alg.run(self.iterations)
-        return move
+        self.move_history = self.alg.run(self.iterations)
+        return max(self.move_history, key=lambda key: self.move_history[key])
 
     def set_parameters(self, exploration: float, learning_rate: float) -> None:
         """
@@ -368,3 +374,10 @@ class CBT1Player(Player):
         """
         self.exploration = exploration
         self.learning_rate = learning_rate
+
+    @property
+    def win_rate(self) -> float:
+        """
+        Calculate the win rate based on the number of wins and total iterations.
+        """
+        return self.alg.wins / self.iterations

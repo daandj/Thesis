@@ -6,15 +6,24 @@ import numpy as np
 import cbt.games.tictactoe as ttt
 import cbt.algorithms.minimal_UCB as ucb
 
-def main(size: int, iterations: int) -> int:
-    game = ttt.TicTacToe(print_flag=False)
-    game.set_board_size(size)
+def main(size: int, reps: int = 10) -> int:
+    for iterations in [10,100,1000,10000,100000]:
+        outcomes = [0.0] * reps
+        for i in range(reps):
+            game = ttt.TicTacToe(print_flag=False)
+            game.set_board_size(size)
 
-    cbt_player = ucb.UCBPlayer(0, data_flag=True, print_flag=False)
-    cbt_player.iterations = iterations
-    move = cbt_player.make_move(game)
-    print(f"ttt_2_level control ({size=}), made move: {move}", file=sys.stderr)
+            ucb_player = ucb.UCBPlayer(0, data_flag=False, print_flag=False)
+            ucb_player.iterations = iterations
+            move = ucb_player.make_move(game)
+            print(f"ttt_2_level control ({size=},{iterations=},{i=}), "
+                  f"made move: {move}", file=sys.stderr)
+
+            outcomes[i] = ucb_player.win_rate
+            game.reset()
+        print(f"{iterations} {sum(outcomes) / reps} {min(outcomes)} {max(outcomes)}")
     return 0
+
 
 def min_max(means: np.ndarray) -> int:
     print(f"minmax={means.min(axis=1).max()}", file=sys.stderr)
@@ -22,6 +31,5 @@ def min_max(means: np.ndarray) -> int:
 
 if __name__ == '__main__':
     s = int(sys.argv[1])
-    iters = int(sys.argv[2])
 
-    sys.exit(main(s, iters))
+    sys.exit(main(s))

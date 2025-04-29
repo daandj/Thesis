@@ -11,15 +11,16 @@ set terminal pngcairo size 1000,800 font ",24"
 set output 'plt/parameter_exploration.png'
 set grid
 set ytics
-set xtics 0,((x_max+1)/5)
 
-set yrange [0:1]
+set logscale x
+
+# set yrange [0:1]
 set xlabel 'Number of repetitions'
-set ylabel 'Average gain'
+set ylabel 'Estimated regret'
 
-plot exp_10 title "Exploration rate = 10" with lines, \
-     exp_50 title "Exploration rate = 50" with lines, \
-     exp_100 title "Exploration rate = 100" with lines, \
-     exp_150 title "Exploration rate = 150" with lines, \
-     exp_200 title "Exploration rate = 200" with lines, \
-     exp_250 title "Exploration rate = 250" with lines
+plot exp_10 using 1:2 with lines lc "green" lw 2 title "Exploration rate = 10", \
+     exp_50 using 1:2 with lines lc "blue" lw 2 title "Exploration rate = 50", \
+     exp_100 using 1:2 with lines lc "red" lw 2  title "Exploration rate = 100", \
+     exp_150 using 1:2 with lines lc "pink" lw 2  title "Exploration rate = 150", \
+     exp_200 using 1:2 with lines lc "magenta" lw 2  title "Exploration rate = 200", \
+     exp_250 using 1:2 with lines lc "grey" lw 2  title "Exploration rate = 250"

@@ -10,10 +10,13 @@ import cbt.algorithms.minimal_UCB as ucb
 def main(size: int, reps: int = 10) -> int:
     if size == 10:
         means = settings.means_10_10
+        best_move = settings.best_move_10_10
     elif size == 20:
         means = settings.means_20_20
+        best_move = settings.best_move_20_20
     elif size == 30:
         means = settings.means_30_30
+        best_move = settings.best_move_30_30
     else:
         raise ValueError("Invalid size. Use 10 or 20.")
 
@@ -25,14 +28,15 @@ def main(size: int, reps: int = 10) -> int:
             ucb_player = ucb.UCBPlayer(0, data_flag=False, print_flag=False)
             ucb_player.iterations = iterations
             move = ucb_player.make_move(game)
-            print(f"Minimal control ({size=},{iterations=},{i=}), made move: {move}",
+            print(f"Best move control ({size=},{iterations=},{i=}), made move: {move}",
                   file=sys.stderr)
 
-            outcomes[i] = ucb_player.win_rate
+            outcomes[i] = ucb_player.move_history[best_move] / iterations
             game.reset()
-        print(f"{iterations} {sum(outcomes) / reps} {min(outcomes)} {max(outcomes)}")
+        print(f"{iterations} {sum(outcomes) / reps} "
+              f"{min(outcomes)} {max(outcomes)}")
 
-    print(f"minimal control {size=},min_max={min_max(means)}", file=sys.stderr)
+    print(f"Best move control {size=},min_max={min_max(means)}", file=sys.stderr)
     return 0
 
 def min_max(means: np.ndarray) -> float:

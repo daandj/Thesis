@@ -11,15 +11,18 @@ set terminal pngcairo size 1000,800 font ",24"
 set output 'plt/parameter_learning.png'
 set grid
 set ytics
-set xtics 0,((x_max+1)/5)
 
-set yrange [0:1]
+set key left bottom
+
+set logscale x
+
+# set yrange [0:1]
 set xlabel 'Number of repetitions'
-set ylabel 'Average gain'
+set ylabel 'Estimated regret'
 
-plot learning_0 title "Learning rate = 0" with lines, \
-     learning_500 title "Learning rate = 500" with lines, \
-     learning_1000 title "Learning rate = 1000" with lines, \
-     learning_1500 title "Learning rate = 1500" with lines, \
-     learning_2000 title "Learning rate = 2000" with lines, \
-     learning_2500 title "Learning rate = 2500" with lines
+plot learning_0 using 1:2 lc "green" lw 3 with lines title "Learning rate = 0", \
+     learning_500 using 1:2 lc "blue" lw 3 with lines title "Learning rate = 500", \
+     learning_1000 using 1:2 lc "red" lw 3 with lines title "Learning rate = 1000", \
+     learning_1500 using 1:2 lc "pink" lw 3 with lines title "Learning rate = 1500", \
+     learning_2000 using 1:2 lc "magenta" lw 3 with lines title "Learning rate = 2000", \
+     learning_2500 using 1:2 lc "grey" lw 3 with lines title "Learning rate = 2500"

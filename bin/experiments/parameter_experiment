@@ -7,17 +7,24 @@ import numpy as np
 import cbt.games.minimal as mg
 import cbt.algorithms.CBT1 as cbt
 
-def main(iterations: int, exp: float, learning_rate: float) -> int:
+def main(exp: float, learning_rate: float, reps: int = 10) -> int:
     means = settings.means_10_10
 
-    game = mg.Minimal(means=means)
+    for iterations in [10,100,1000,10000,100000]:
+        outcomes = [0.0] * reps
+        for i in range(reps):
+            game = mg.Minimal(means=means)
 
-    cbt_player = cbt.CBT1Player(0, data_flag=True, print_flag=False)
-    cbt_player.iterations = iterations
-    cbt_player.set_parameters(exp, learning_rate)
+            cbt_player = cbt.CBT1Player(0, data_flag=False, print_flag=False)
+            cbt_player.iterations = iterations
+            cbt_player.set_parameters(exp, learning_rate)
 
-    move = cbt_player.make_move(game)
-    print(f"Minimal experiment (means=10), {move=}", file=sys.stderr)
+            move = cbt_player.make_move(game)
+            print(f"Parameter experiment (size=10,{iterations=},{i=}), made move: {move}",
+                  file=sys.stderr)
+
+            outcomes[i] = cbt_player.win_rate
+        print(f"{iterations} {sum(outcomes) / reps} {min(outcomes)} {max(outcomes)}")
     return 0
 
 def min_max(means: np.ndarray) -> int:
@@ -25,8 +32,7 @@ def min_max(means: np.ndarray) -> int:
     return 0
 
 if __name__ == '__main__':
-    iters = int(sys.argv[1])
-    exploration = float(sys.argv[2])
-    learning = float(sys.argv[3])
+    exploration = float(sys.argv[1])
+    learning = float(sys.argv[2])
 
-    sys.exit(main(iters, exploration, learning))
+    sys.exit(main(exploration, learning))
