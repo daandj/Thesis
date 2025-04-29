@@ -17,11 +17,11 @@ def main(size: int = 3) -> int:
         leaves: list[tuple[float, float]]
 
         game.do(move)
-        print(f"{move=}")
 
         second_moves = game.moves
         min_max[move] = [0.0] * len(moves)
         for second_move in second_moves:
+            print(f"{move=}", file=sys.stderr)
             game.do(second_move)
             leaves = leave_chances(game)
             exp_value = reduce(add, map(lambda tup: tup[0] * tup[1], leaves))
