@@ -15,7 +15,7 @@ set ytics
 
 set xrange [1:*]
 set yrange [0:1]
-set xlabel 'Number of repetitions (T)'
+set xlabel 'Number of repetitions'
 set ylabel 'Estimated chance of picking the best move'
 
 set errorbars 8

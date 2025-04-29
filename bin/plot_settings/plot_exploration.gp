@@ -16,7 +16,7 @@ set logscale x
 
 # set yrange [0:1]
 set xlabel 'Number of repetitions'
-set ylabel 'Average gain'
+set ylabel 'Estimated regret'
 
 plot exp_10 using 1:2 with lines lc "green" lw 2 title "Exploration rate = 10", \
      exp_50 using 1:2 with lines lc "blue" lw 2 title "Exploration rate = 50", \

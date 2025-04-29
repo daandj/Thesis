@@ -14,7 +14,7 @@ set ytics
 set xrange [1:*]
 # set yrange [0:1]
 set xlabel 'Number of repetitions (T)'
-set ylabel 'Average gain'
+set ylabel 'Estimated regret'
 
 set errorbars 8
 

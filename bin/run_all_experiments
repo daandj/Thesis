@@ -31,10 +31,10 @@ mkdir -p plt
 wait
 
 # Then run the TicTacToe experiment
-echo "Running TicTacToe experiment (3x3)"
-bin/experiments/ttt_2_level_experiment 3 | awk -v mean=0.79 -f bin/subtract_mean.awk > data/ttt_2_level_3_cbt.dat &
-echo "Running TicTacToe control (3x3)"
-bin/experiments/ttt_2_level_control 3 | awk -v mean=0.79 -f bin/subtract_mean.awk > data/ttt_2_level_3_ucb.dat &
+# echo "Running TicTacToe experiment (3x3)"
+# bin/experiments/ttt_2_level_experiment 3 | awk -v mean=0.71 -f bin/subtract_mean.awk > data/ttt_2_level_3_cbt.dat &
+# echo "Running TicTacToe control (3x3)"
+# bin/experiments/ttt_2_level_control 3 | awk -v mean=0.71 -f bin/subtract_mean.awk > data/ttt_2_level_3_ucb.dat &
 
 # echo "Running TicTacToe experiment (5x5)"
 # bin/experiments/ttt_2_level_experiment 5 > data/ttt_2_level_5_cbt.dat &
@@ -81,17 +81,17 @@ wait
 
 # echo "Testing learning rate with minimal game (10x10)"
 # echo "nu=10, gamma=0"
-# bin/experiments/parameter_experiment 10 0 > data/parameter_10_0.dat &
+# bin/experiments/parameter_experiment 10 0 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_0.dat &
 # echo "nu=10, gamma=500"
-# bin/experiments/parameter_experiment 10 500 > data/parameter_10_500.dat &
+# bin/experiments/parameter_experiment 10 500 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_500.dat &
 # echo "nu=10, gamma=1000"
-# bin/experiments/parameter_experiment 10 1000 > data/parameter_10_1000.dat &
+# bin/experiments/parameter_experiment 10 1000 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_1000.dat &
 # echo "nu=10, gamma=1500"
-# bin/experiments/parameter_experiment 10 1500 > data/parameter_10_1500.dat &
+# bin/experiments/parameter_experiment 10 1500 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_1500.dat &
 # echo "nu=10, gamma=2000"
-# bin/experiments/parameter_experiment 10 2000 > data/parameter_10_2000.dat &
+# bin/experiments/parameter_experiment 10 2000 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_2000.dat &
 # echo "nu=10, gamma=2500"
-# bin/experiments/parameter_experiment 10 2500 > data/parameter_10_2500.dat &
+# bin/experiments/parameter_experiment 10 2500 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_2500.dat &
 
 wait
 
