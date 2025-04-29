@@ -5,10 +5,10 @@ mkdir -p data
 mkdir -p plt
 
 # First run the minimal experiment
-echo "Running minimal experiment (10x10)"
-bin/experiments/minimal_experiment 10 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/minimal_10_cbt.dat &
-echo "Running minimal control (10x10)"
-bin/experiments/minimal_control 10 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/minimal_10_ucb.dat &
+# echo "Running minimal experiment (10x10)"
+# bin/experiments/minimal_experiment 10 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/minimal_10_cbt.dat &
+# echo "Running minimal control (10x10)"
+# bin/experiments/minimal_control 10 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/minimal_10_ucb.dat &
 
 # # echo "Running minimal experiment (20x20)"
 # bin/experiments/minimal_experiment 20 | awk -v mean=0.21 -f bin/subtract_mean.awk > data/minimal_20_cbt.dat &
@@ -21,20 +21,20 @@ bin/experiments/minimal_control 10 | awk -v mean=0.48 -f bin/subtract_mean.awk >
 # bin/experiments/minimal_control 30 | awk -v mean=0.11 -f bin/subtract_mean.awk > data/minimal_30_ucb.dat &
 
 # echo "Running best move experiment"
-# bin/best_move_experiment 10 > data/best_move_10_cbt.dat &
-# bin/best_move_control 10 > data/best_move_10_ucb.dat &
-# bin/best_move_experiment 20 > data/best_move_20_cbt.dat &
-# bin/best_move_control 20 > data/best_move_20_ucb.dat &
-# bin/best_move_experiment 30 > data/best_move_30_cbt.dat &
-# bin/best_move_control 30 > data/best_move_30_ucb.dat &
+# bin/experiments/best_move_experiment 10 > data/best_move_10_cbt.dat &
+# bin/experiments/best_move_control 10 > data/best_move_10_ucb.dat &
+# bin/experiments/best_move_experiment 20 > data/best_move_20_cbt.dat &
+# bin/experiments/best_move_control 20 > data/best_move_20_ucb.dat &
+# bin/experiments/best_move_experiment 30 > data/best_move_30_cbt.dat &
+# bin/experiments/best_move_control 30 > data/best_move_30_ucb.dat &
 
 wait
 
-# # Then run the TicTacToe experiment
-# echo "Running TicTacToe experiment (3x3)"
-# bin/experiments/ttt_2_level_experiment 3 > data/ttt_2_level_3_cbt.dat &
-# echo "Running TicTacToe control (3x3)"
-# bin/experiments/ttt_2_level_control 3 > data/ttt_2_level_3_ucb.dat &
+# Then run the TicTacToe experiment
+echo "Running TicTacToe experiment (3x3)"
+bin/experiments/ttt_2_level_experiment 3 | awk -v mean=0.79 -f bin/subtract_mean.awk > data/ttt_2_level_3_cbt.dat &
+echo "Running TicTacToe control (3x3)"
+bin/experiments/ttt_2_level_control 3 | awk -v mean=0.79 -f bin/subtract_mean.awk > data/ttt_2_level_3_ucb.dat &
 
 # echo "Running TicTacToe experiment (5x5)"
 # bin/experiments/ttt_2_level_experiment 5 > data/ttt_2_level_5_cbt.dat &
@@ -97,17 +97,17 @@ wait
 
 # Then make plots from the data
 echo "Making plots from data..."
-gnuplot -c bin/plot_settings/plot_settings.gp minimal_10
-gnuplot -c bin/plot_settings/plot_settings.gp minimal_20
-gnuplot -c bin/plot_settings/plot_settings.gp minimal_30
+gnuplot -c bin/plot_settings/plot_settings_new.gp minimal_10
+gnuplot -c bin/plot_settings/plot_settings_new.gp minimal_20
+gnuplot -c bin/plot_settings/plot_settings_new.gp minimal_30
 
-gnuplot -c bin/plot_settings/plot_settings.gp ttt_2_level_3
-gnuplot -c bin/plot_settings/plot_settings.gp ttt_2_level_5
-gnuplot -c bin/plot_settings/plot_settings.gp ttt_2_level_10
+gnuplot -c bin/plot_settings/plot_settings_new.gp ttt_2_level_3
+gnuplot -c bin/plot_settings/plot_settings_new.gp ttt_2_level_5
+gnuplot -c bin/plot_settings/plot_settings_new.gp ttt_2_level_10
 
-gnuplot -c bin/plot_settings/plot_settings.gp ttt_dyn_level_3
-gnuplot -c bin/plot_settings/plot_settings.gp ttt_dyn_level_5
-gnuplot -c bin/plot_settings.gp ttt_dyn_level_10
+# gnuplot -c bin/plot_settings/plot_settings.gp ttt_dyn_level_3
+# gnuplot -c bin/plot_settings/plot_settings.gp ttt_dyn_level_5
+# gnuplot -c bin/plot_settings/plot_settings.gp ttt_dyn_level_10
 
 gnuplot -c bin/plot_settings/plot_exploration.gp
 gnuplot -c bin/plot_settings/plot_learning.gp
