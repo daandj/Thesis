@@ -4,7 +4,7 @@ import numpy as np
 parameters = {
     10: {
         "exploration": 10.0,
-        "learning_rate": 1175.0,
+        "learning_rate": 1500.0,
     },
     20: {
         "exploration": 20.0,

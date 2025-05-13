@@ -30,7 +30,8 @@ def main(size: int, reps: int = 10) -> int:
 
             outcomes[i] = ucb_player.win_rate
             game.reset()
-        print(f"{iterations} {sum(outcomes) / reps} {min(outcomes)} {max(outcomes)}")
+        print(f"{iterations} {sum(outcomes) / reps} "
+              f"{np.quantile(outcomes, 0.25)} {np.quantile(outcomes, 0.75)}")
 
     print(f"minimal control {size=},min_max={min_max(means)}", file=sys.stderr)
     return 0

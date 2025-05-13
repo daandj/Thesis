@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+# from math import log, sqrt
 import sys
 import settings # type: ignore
 import numpy as np
@@ -30,6 +31,9 @@ def main(size: int, reps: int = 10) -> int:
 
             cbt_player = cbt.CBT1Player(0, data_flag=False, print_flag=False)
             cbt_player.iterations = iterations
+            # params["learning_rate"] = sqrt(2*size*iterations/(size*log(1+ iterations / size)))
+            # print(f"leaning_rate={params['learning_rate']}", file=sys.stderr)
+
             cbt_player.set_parameters(params["exploration"], params["learning_rate"])
 
             move = cbt_player.make_move(game)
@@ -38,7 +42,7 @@ def main(size: int, reps: int = 10) -> int:
 
             outcomes[i] = cbt_player.move_history[best_move] / iterations
         print(f"{iterations} {sum(outcomes) / reps} "
-              f"{min(outcomes)} {max(outcomes)}")
+              f"{np.quantile(outcomes, 0.25)} {np.quantile(outcomes, 0.75)}")
     return 0
 
 def min_max(means: np.ndarray) -> int:

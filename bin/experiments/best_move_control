@@ -34,7 +34,7 @@ def main(size: int, reps: int = 10) -> int:
             outcomes[i] = ucb_player.move_history[best_move] / iterations
             game.reset()
         print(f"{iterations} {sum(outcomes) / reps} "
-              f"{min(outcomes)} {max(outcomes)}")
+              f"{np.quantile(outcomes, 0.25)} {np.quantile(outcomes, 0.75)}")
 
     print(f"Best move control {size=},min_max={min_max(means)}", file=sys.stderr)
     return 0
