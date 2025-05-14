@@ -14,7 +14,8 @@ set ytics
 
 set logscale x
 
-# set yrange [0:1]
+set key right bottom
+
 set xlabel 'Number of repetitions'
 set ylabel 'Estimated regret'
 

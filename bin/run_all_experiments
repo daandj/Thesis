@@ -3,30 +3,56 @@
 # Create a directory for the data if it doesn't exist
 mkdir -p data
 mkdir -p plt
+mkdir -p data/moves
+mkdir -p data/regret
 
 # First run the minimal experiment
 # echo "Running minimal experiment (10x10)"
-# bin/experiments/minimal_experiment 10 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/minimal_10_cbt.dat &
+# bin/experiments/minimal_experiment 10 \
+    # 2> data/moves/minimal_exp.dat \
+    # | awk -v mean=0.48 -f bin/subtract_mean.awk > data/minimal_10_cbt.dat &
 # echo "Running minimal control (10x10)"
-# bin/experiments/minimal_control 10 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/minimal_10_ucb.dat &
+# bin/experiments/minimal_control 10  \
+#     2> data/moves/minimal_con.dat \
+#     | awk -v mean=0.48 -f bin/subtract_mean.awk > data/minimal_10_ucb.dat &
 
-# # echo "Running minimal experiment (20x20)"
-# bin/experiments/minimal_experiment 20 | awk -v mean=0.21 -f bin/subtract_mean.awk > data/minimal_20_cbt.dat &
-# # echo "Running minimal control (20x20)"
-# bin/experiments/minimal_control 20 | awk -v mean=0.21 -f bin/subtract_mean.awk > data/minimal_20_ucb.dat &
+# echo "Running minimal experiment (20x20)"
+# bin/experiments/minimal_experiment 20  \
+#     2> data/moves/minimal_exp_20.dat \
+#     | awk -v mean=0.21 -f bin/subtract_mean.awk > data/minimal_20_cbt.dat &
+# echo "Running minimal control (20x20)"
+# bin/experiments/minimal_control 20  \
+#     2> data/moves/minimal_con_20.dat \
+#     | awk -v mean=0.21 -f bin/subtract_mean.awk > data/minimal_20_ucb.dat &
 
-# # echo "Running minimal experiment (30x30)"
-# bin/experiments/minimal_experiment 30 | awk -v mean=0.11 -f bin/subtract_mean.awk > data/minimal_30_cbt.dat &
-# # echo "Running minimal control (30x30)"
-# bin/experiments/minimal_control 30 | awk -v mean=0.11 -f bin/subtract_mean.awk > data/minimal_30_ucb.dat &
+# echo "Running minimal experiment (30x30)"
+# bin/experiments/minimal_experiment 30  \
+#     2> data/moves/minimal_exp_30.dat \
+#     | awk -v mean=0.11 -f bin/subtract_mean.awk > data/minimal_30_cbt.dat &
+# echo "Running minimal control (30x30)"
+# bin/experiments/minimal_control 30  \
+#     2> data/moves/minimal_con_30.dat \
+#     | awk -v mean=0.11 -f bin/subtract_mean.awk > data/minimal_30_ucb.dat &
 
 # echo "Running best move experiment"
-# bin/experiments/best_move_experiment 10 > data/best_move_10_cbt.dat &
-# bin/experiments/best_move_control 10 > data/best_move_10_ucb.dat &
-# bin/experiments/best_move_experiment 20 > data/best_move_20_cbt.dat &
-# bin/experiments/best_move_control 20 > data/best_move_20_ucb.dat &
-# bin/experiments/best_move_experiment 30 > data/best_move_30_cbt.dat &
-# bin/experiments/best_move_control 30 > data/best_move_30_ucb.dat &
+# bin/experiments/best_move_experiment 10  \
+    # 2> data/moves/minimal_exp.dat \
+    # > data/best_move_10_cbt.dat &
+# bin/experiments/best_move_control 10  \
+    # 2> data/moves/minimal_exp.dat \
+    # > data/best_move_10_ucb.dat &
+# bin/experiments/best_move_experiment 20  \
+    # 2> data/moves/minimal_exp.dat \
+    # > data/best_move_20_cbt.dat &
+# bin/experiments/best_move_control 20  \
+    # 2> data/moves/minimal_exp.dat \
+    # > data/best_move_20_ucb.dat &
+# bin/experiments/best_move_experiment 30 \
+    # 2> data/moves/minimal_exp.dat \
+    #  > data/best_move_30_cbt.dat &
+# bin/experiments/best_move_control 30  \
+    # 2> data/moves/minimal_exp.dat \
+    # > data/best_move_30_ucb.dat &
 
 wait
 
@@ -67,17 +93,17 @@ wait
 
 # echo "Testing exploration parameter with minimal game (10x10)"
 # echo "nu=10, gamma=1000"
-# bin/experiments/parameter_experiment 10 1000 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_1000.dat &
+# bin/experiments/parameter_experiment 10 1175 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_1000.dat &
 # echo "nu=50, gamma=1000"
-# bin/experiments/parameter_experiment 50 1000 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_50_1000.dat &
+# bin/experiments/parameter_experiment 50 1175 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_50_1000.dat &
 # echo "nu=100, gamma=1000"
-# bin/experiments/parameter_experiment 100 1000 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_100_1000.dat &
+# bin/experiments/parameter_experiment 100 1175 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_100_1000.dat &
 # echo "nu=150, gamma=1000"
-# bin/experiments/parameter_experiment 150 1000 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_150_1000.dat &
+# bin/experiments/parameter_experiment 150 1175 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_150_1000.dat &
 # echo "nu=200, gamma=1000"
-# bin/experiments/parameter_experiment 200 1000 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_200_1000.dat &
+# bin/experiments/parameter_experiment 200 1175 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_200_1000.dat &
 # echo "nu=250, gamma=1000"
-# bin/experiments/parameter_experiment 250 1000 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_250_1000.dat &
+# bin/experiments/parameter_experiment 250 1175 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_250_1000.dat &
 
 # echo "Testing learning rate with minimal game (10x10)"
 # echo "nu=10, gamma=0"

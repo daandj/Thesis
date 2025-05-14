@@ -18,7 +18,7 @@ def main(size: int, iterations: int) -> int:
     cbt_player.set_parameters(params["exploration"], params["learning_rate"])
 
     move = cbt_player.make_move(game)
-    print(f"ttt_2_level experiment ({size=}), made move: {move}", file=sys.stderr)
+    print(f"ttt_2_level_experiment {size} {move}", file=sys.stderr)
     return 0
 
 def min_max(means: np.ndarray) -> int:

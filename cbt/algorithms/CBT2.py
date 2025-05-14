@@ -311,10 +311,12 @@ class CBT2Player(Player):
         move = alg.run(self.iterations)
         return move
 
-
     def set_parameters(self, exploration: float, learning_rate: float) -> None:
         """
         Set the parameters for the bandit algorithm.
         """
         self.exploration = exploration
         self.learning_rate = learning_rate
+
+    def best_move(self, _: str = "max_n"):
+        raise NotImplementedError("best_move is not implemented for CBT2Player")

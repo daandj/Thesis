@@ -20,11 +20,12 @@ def main(exp: float, learning_rate: float, reps: int = 10) -> int:
             cbt_player.set_parameters(exp, learning_rate)
 
             move = cbt_player.make_move(game)
-            print(f"Parameter experiment (size=10,{iterations=},{i=}), made move: {move}",
+            print(f"Parameter_experiment 10 {iterations} {i} {move}",
                   file=sys.stderr)
 
             outcomes[i] = cbt_player.win_rate
-        print(f"{iterations} {sum(outcomes) / reps} {min(outcomes)} {max(outcomes)}")
+        print(f"{iterations} {sum(outcomes) / reps} {np.quantile(outcomes, 0.25)} "
+              f" {np.quantile(outcomes, 0.75)}")
     return 0
 
 def min_max(means: np.ndarray) -> int:

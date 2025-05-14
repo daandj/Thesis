@@ -12,7 +12,7 @@ def main(size: int, iterations: int) -> int:
     mcts_player = ttt.MCTSPlayer(0, data_flag=True, print_flag=False)
     mcts_player.iterations = iterations
     move = mcts_player.make_move(game)
-    print(f"ttt_2_level control ({size=}), made move: {move}", file=sys.stderr)
+    print(f"ttt_2_level_control {size} {move}", file=sys.stderr)
     return 0
 
 def min_max(means: np.ndarray) -> int:

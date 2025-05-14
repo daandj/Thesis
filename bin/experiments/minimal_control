@@ -25,12 +25,13 @@ def main(size: int, reps: int = 10) -> int:
             ucb_player = ucb.UCBPlayer(0, data_flag=False, print_flag=False)
             ucb_player.iterations = iterations
             move = ucb_player.make_move(game)
-            print(f"Minimal control ({size=},{iterations=},{i=}), made move: {move}",
+            print(f"Minimal_control {size} {iterations} {move}",
                   file=sys.stderr)
 
             outcomes[i] = ucb_player.win_rate
             game.reset()
-        print(f"{iterations} {sum(outcomes) / reps} {min(outcomes)} {max(outcomes)}")
+        print(f"{iterations} {sum(outcomes) / reps} "
+              f"{np.quantile(outcomes, 0.25)} {np.quantile(outcomes, 0.75)}")
 
     print(f"minimal control {size=},min_max={min_max(means)}", file=sys.stderr)
     return 0
