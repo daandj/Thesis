@@ -25,7 +25,7 @@ def main(size: int, reps: int = 10) -> int:
         raise ValueError("Invalid size. Use 10, 20 or 30.")
 
     for iterations in [10,100,1000,10000,100000]:
-        outcomes = [0.0] * reps
+        outcomes_n = [0.0] * reps
         for i in range(reps):
             game = mg.Minimal(means=means)
 
@@ -37,12 +37,12 @@ def main(size: int, reps: int = 10) -> int:
             cbt_player.set_parameters(params["exploration"], params["learning_rate"])
 
             move = cbt_player.make_move(game)
-            print(f"Best move experiment ({size=},{iterations=},{i=}), made move: {move}",
+            print(f"Best_move_experiment {size} {iterations} {i} {move}",
                   file=sys.stderr)
 
-            outcomes[i] = cbt_player.move_history[best_move] / iterations
-        print(f"{iterations} {sum(outcomes) / reps} "
-              f"{np.quantile(outcomes, 0.25)} {np.quantile(outcomes, 0.75)}")
+            outcomes_n[i] = cbt_player.move_history[best_move] / iterations
+        print(f"{iterations} {sum(outcomes_n) / reps} "
+              f"{np.quantile(outcomes_n, 0.25)} {np.quantile(outcomes_n, 0.75)}")
     return 0
 
 def min_max(means: np.ndarray) -> int:

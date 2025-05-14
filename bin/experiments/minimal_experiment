@@ -33,8 +33,12 @@ def main(size: int, reps: int = 10) -> int:
 
             cbt_player.set_parameters(params["exploration"], params["learning_rate"])
 
-            move = cbt_player.make_move(game)
-            print(f"Minimal experiment ({size=},{iterations=},{i=}), made move: {move}",
+            max_n_move = cbt_player.make_move(game)
+            min_loss_move = cbt_player.best_move(method="min_loss")
+
+            assert max_n_move == cbt_player.best_move()
+            # Print recommended moves
+            print(f"Minimal_experiment {size} {iterations} {max_n_move} {min_loss_move}",
                   file=sys.stderr)
 
             outcomes[i] = cbt_player.win_rate

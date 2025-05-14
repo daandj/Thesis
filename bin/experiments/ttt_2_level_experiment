@@ -23,7 +23,7 @@ def main(size: int, reps: int = 10) -> int:
             cbt_player.set_parameters(params["exploration"], params["learning_rate"])
 
             move = cbt_player.make_move(game)
-            print(f"ttt_2_level experiment ({size=},{iterations=},{i=}), made move: {move}",
+            print(f"ttt_2_level_experiment {size} {iterations} {i} {move}",
                   file=sys.stderr)
 
             outcomes[i] = cbt_player.win_rate

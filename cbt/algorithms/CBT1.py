@@ -71,6 +71,17 @@ class CBTNode:
         for child in self.children:
             child.print_tree()
 
+    def avg_reward(self) -> float:
+        """
+        Calculate the average reward for the node.
+        """
+        if self.n == 0:
+            raise ValueError("Node has not been visited yet")
+        if self.leaf:
+            raise ValueError("Node is a leaf node")
+
+        return self.r / self.n
+
 class CBandit:
     """
     Implements a contextual bandit algorithm for decision-making in the CBT framework.
@@ -203,6 +214,7 @@ class CBT1:
     gamma: float
     game: Game
     wins: int
+    root: CBTNode
 
     def __init__(self, game: Game,
                  data_flag: bool = False,
@@ -225,14 +237,14 @@ class CBT1:
         Run the CBT algorithm for a specified number of iterations and return the best move.
         """
 
-        root = CBTNode()
-        self.cbandit.initialize_node(root, self.game)
+        self.root = CBTNode()
+        self.cbandit.initialize_node(self.root, self.game)
 
         # Create all children of the root node.
-        self.expand_root(root)
+        self.expand_root(self.root)
 
         for i in range(iters):
-            v = self.select(root)
+            v = self.select(self.root)
 
             res = self.simulate()
 
@@ -247,9 +259,7 @@ class CBT1:
 
             self.wins += res
 
-        # TODO: Think about what to return
-
-        return {child.prev_move: child.n for child in root.children}
+        return {child.prev_move: child.n for child in self.root.children}
 
     def select(self, v: CBTNode) -> CBTNode:
         """
@@ -338,6 +348,23 @@ class CBT1:
         res = set(self.game.moves).difference(map(lambda child: child.prev_move, v.children))
         return list(res)
 
+    def get_best_move(self, method='max_n') -> int:
+        """
+        Return the best move based on the number of visits to each child.
+        """
+        def regret(child: CBTNode) -> float:
+            return child.r / child.n if child.n != 0 else 0
+
+        if self.game.finished:
+            raise ValueError("Game is finished, no best move available")
+
+        if method == 'max_n':
+            return max(self.root.children, key=lambda child: child.n).prev_move
+
+        if method == 'min_loss':
+            return max(self.root.children, key=regret).prev_move
+
+        raise ValueError(f"Unknown method: {method}")
 
 class CBT1Player(Player):
     iterations: int
@@ -381,3 +408,9 @@ class CBT1Player(Player):
         Calculate the win rate based on the number of wins and total iterations.
         """
         return self.alg.wins / self.iterations
+
+    def best_move(self, method: str = "max_n") -> int:
+        """
+        Return the best move, based on some method. Default is the most visited node.
+        """
+        return self.alg.get_best_move(method=method)

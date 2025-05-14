@@ -8,7 +8,7 @@ parameters = {
     },
     20: {
         "exploration": 20.0,
-        "learning_rate": 1662.0,
+        "learning_rate": 1750.0,
     },
     30: {
         "exploration": 30.0,

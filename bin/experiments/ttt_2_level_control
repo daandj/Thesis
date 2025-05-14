@@ -16,12 +16,12 @@ def main(size: int, reps: int = 10) -> int:
             ucb_player = ucb.UCBPlayer(0, data_flag=False, print_flag=False)
             ucb_player.iterations = iterations
             move = ucb_player.make_move(game)
-            print(f"ttt_2_level control ({size=},{iterations=},{i=}), "
-                  f"made move: {move}", file=sys.stderr)
+            print(f"ttt_2_level_control {size} {iterations} {i} {move}", file=sys.stderr)
 
             outcomes[i] = ucb_player.win_rate
             game.reset()
-        print(f"{iterations} {sum(outcomes) / reps} {np.quantile(outcomes, 0.25)} {np.quantile(outcomes, 0.75)}")
+        print(f"{iterations} {sum(outcomes) / reps} {np.quantile(outcomes, 0.25)} "
+              f"{np.quantile(outcomes, 0.75)}")
     return 0
 
 

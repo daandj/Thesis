@@ -28,7 +28,7 @@ def main(size: int, reps: int = 10) -> int:
             ucb_player = ucb.UCBPlayer(0, data_flag=False, print_flag=False)
             ucb_player.iterations = iterations
             move = ucb_player.make_move(game)
-            print(f"Best move control ({size=},{iterations=},{i=}), made move: {move}",
+            print(f"Best_move_control {size} {iterations} {i} {move}",
                   file=sys.stderr)
 
             outcomes[i] = ucb_player.move_history[best_move] / iterations
@@ -36,7 +36,7 @@ def main(size: int, reps: int = 10) -> int:
         print(f"{iterations} {sum(outcomes) / reps} "
               f"{np.quantile(outcomes, 0.25)} {np.quantile(outcomes, 0.75)}")
 
-    print(f"Best move control {size=},min_max={min_max(means)}", file=sys.stderr)
+    print(f"Best move control {size},min_max={min_max(means)}", file=sys.stderr)
     return 0
 
 def min_max(means: np.ndarray) -> float:

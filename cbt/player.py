@@ -16,3 +16,7 @@ class Player(ABC):
     @abstractmethod
     def make_move(self, game: Game) -> int:
         raise NotImplementedError()
+
+    @abstractmethod
+    def best_move(self, method: str = "max_n") -> int:
+        raise NotImplementedError()

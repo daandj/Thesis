@@ -297,3 +297,12 @@ class UCBPlayer(Player):
         Calculate the win rate of the player.
         """
         return self.alg.wins / self.iterations
+
+    def best_move(self, method: str = "max_n") -> int:
+        """
+        Return the best move based on the specified method.
+        """
+        if method == "max_n":
+            return max(self.move_history, key=lambda key: self.move_history[key])
+
+        raise ValueError("Invalid method. Use 'max_n'.")
