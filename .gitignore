@@ -1,5 +1,6 @@
 # ignore cache folders
 **/__pycache__/
+**/.DS_Store
 
 /src/AlphaZero.py
 /src/neuralnetwork.py
