@@ -13,46 +13,40 @@ mkdir -p data/regret
     # | awk -v mean=0.48 -f bin/subtract_mean.awk > data/minimal_10_cbt.dat &
 # echo "Running minimal control (10x10)"
 # bin/experiments/minimal_control 10  \
-#     2> data/moves/minimal_con.dat \
+#     2> data/moves/minimal_con.dat &
 #     | awk -v mean=0.48 -f bin/subtract_mean.awk > data/minimal_10_ucb.dat &
 
 # echo "Running minimal experiment (20x20)"
 # bin/experiments/minimal_experiment 20  \
-#     2> data/moves/minimal_exp_20.dat \
+#     2> data/moves/minimal_exp_20.dat &
 #     | awk -v mean=0.21 -f bin/subtract_mean.awk > data/minimal_20_cbt.dat &
 # echo "Running minimal control (20x20)"
 # bin/experiments/minimal_control 20  \
-#     2> data/moves/minimal_con_20.dat \
+#     2> data/moves/minimal_con_20.dat &
 #     | awk -v mean=0.21 -f bin/subtract_mean.awk > data/minimal_20_ucb.dat &
 
 # echo "Running minimal experiment (30x30)"
 # bin/experiments/minimal_experiment 30  \
 #     2> data/moves/minimal_exp_30.dat \
-#     | awk -v mean=0.11 -f bin/subtract_mean.awk > data/minimal_30_cbt.dat &
+#     | awk -v mean=0.15 -f bin/subtract_mean.awk > data/minimal_30_cbt.dat &
 # echo "Running minimal control (30x30)"
 # bin/experiments/minimal_control 30  \
 #     2> data/moves/minimal_con_30.dat \
-#     | awk -v mean=0.11 -f bin/subtract_mean.awk > data/minimal_30_ucb.dat &
+#     | awk -v mean=0.15 -f bin/subtract_mean.awk > data/minimal_30_ucb.dat &
 
 # echo "Running best move experiment"
 # bin/experiments/best_move_experiment 10  \
-    # 2> data/moves/minimal_exp.dat \
     # > data/best_move_10_cbt.dat &
 # bin/experiments/best_move_control 10  \
-    # 2> data/moves/minimal_exp.dat \
     # > data/best_move_10_ucb.dat &
 # bin/experiments/best_move_experiment 20  \
-    # 2> data/moves/minimal_exp.dat \
     # > data/best_move_20_cbt.dat &
 # bin/experiments/best_move_control 20  \
-    # 2> data/moves/minimal_exp.dat \
     # > data/best_move_20_ucb.dat &
 # bin/experiments/best_move_experiment 30 \
-    # 2> data/moves/minimal_exp.dat \
-    #  > data/best_move_30_cbt.dat &
+#      > data/best_move_30_cbt.dat &
 # bin/experiments/best_move_control 30  \
-    # 2> data/moves/minimal_exp.dat \
-    # > data/best_move_30_ucb.dat &
+#     > data/best_move_30_ucb.dat &
 
 wait
 

@@ -25,7 +25,14 @@ def main(size: int, reps: int = 10) -> int:
             ucb_player = ucb.UCBPlayer(0, data_flag=False, print_flag=False)
             ucb_player.iterations = iterations
             move = ucb_player.make_move(game)
-            print(f"Minimal_control {size} {iterations} {move}",
+
+            max_n_move = ucb_player.best_move()
+            min_loss_move = ucb_player.best_move(method="min_loss")
+
+            assert max_n_move == move, f"{max_n_move} != {move}"
+            # Print recommended moves
+
+            print(f"Minimal_control {size} {iterations} {move} {min_loss_move}",
                   file=sys.stderr)
 
             outcomes[i] = ucb_player.win_rate

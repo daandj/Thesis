@@ -141,6 +141,7 @@ class UCBMinimal:
     gamma: float
     game: Game
     wins: int
+    root: CBTNode
 
     def __init__(self, game: Game,
                  data_flag: bool = False,
@@ -157,14 +158,14 @@ class UCBMinimal:
         """
         Run the CBT algorithm for a specified number of iterations and return the best move.
         """
-        root = CBTNode()
-        self.bandit.initialize_node(root, self.game)
+        self.root = CBTNode()
+        self.bandit.initialize_node(self.root, self.game)
 
         # Create all children of the root node.
-        self.expand_root(root)
+        self.expand_root(self.root)
 
         for i in range(iters):
-            v = self.select(root)
+            v = self.select(self.root)
 
             res = self.simulate()
 
@@ -181,8 +182,8 @@ class UCBMinimal:
         # TODO: Think about what to return
 
         if self.print_flag:
-            root.print_tree()
-        return {child.prev_move: child.n for child in root.children}
+            self.root.print_tree()
+        return {child.prev_move: child.n for child in self.root.children}
 
     def select(self, v: CBTNode) -> CBTNode:
         """
@@ -273,6 +274,21 @@ class UCBMinimal:
         """
         return sqrt(t) # TODO: This, but correct.
 
+    def best_move(self, method: str = "max_n") -> int:
+        """
+        Return the best move based on the specified method.
+        """
+        def regret(child: CBTNode) -> float:
+            return child.r / child.n if child.n != 0 else 0
+
+        if method == "max_n":
+            return max(self.root.children, key=lambda child: child.n).prev_move
+
+        if method == "min_loss":
+            return max(self.root.children, key=regret).prev_move
+
+        raise ValueError("Invalid method. Use 'max_n'.")
+
 class UCBPlayer(Player):
     alg: UCBMinimal
     move_history: dict[int, int]
@@ -302,7 +318,4 @@ class UCBPlayer(Player):
         """
         Return the best move based on the specified method.
         """
-        if method == "max_n":
-            return max(self.move_history, key=lambda key: self.move_history[key])
-
-        raise ValueError("Invalid method. Use 'max_n'.")
+        return self.alg.best_move(method)
