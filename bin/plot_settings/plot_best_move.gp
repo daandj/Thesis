@@ -5,20 +5,24 @@ stats control using 1 name 'x' nooutput
 set terminal png size 1000,800 font ",24"
 set output 'plt/'.ARG1.'.png'
 
-set logscale x
-
 set key top left
 
-set grid
-set ytics
-# set xtics 0,((x_max+1)/5)
+set logscale x
 
-set xrange [1:*]
-set yrange [0:1]
+set grid ytics
+set ytics
+set xtics scale 0
+set xtics ("T=10" 10, "T=100" 100, "T=1000" 1000, "T=10000" 10000, "T=100000" 100000)
+
+set xrange [(10*0.85):*]
+set yrange [-0.05:1.05]
+
+set autoscale noextend
+set offsets graph 0.06, graph 0.06
 set xlabel 'Number of repetitions'
 set ylabel 'Estimated chance of picking the best move'
 
-set errorbars 8
+set errorbars 4
 
-plot experiment using 1:2:3:4 with yerrorbars title "CBT" lc "green" lw 2 pt 1 ps 5, \
-     control using 1:2:3:4 with yerrorbars title "UCB" lc "blue" lw 2 pt 2 ps 5
+plot experiment using ($1*0.85):2:3:4 with yerrorbars title "CBT" lc "green" lw 2 pt 2 ps 3, \
+     control using ($1*1.15):2:3:4 with yerrorbars title "UCB" lc "blue" lw 2 pt 2 ps 3

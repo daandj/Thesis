@@ -19,7 +19,7 @@ parameters = {
         "learning_rate": 1175.0,
         3: {
             "exploration": 9.0,
-            "learning_rate": 1175.0,
+            "learning_rate": 1000.0,
         },
         5: {
             "exploration": 25.0,
