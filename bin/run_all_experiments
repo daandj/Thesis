@@ -86,32 +86,58 @@ wait
 # bin/experiments/ttt_dyn_level_control 10 100000 | awk -f bin/make_aggregate.awk > data/ttt_dyn_level_10_ucb.dat
 
 # echo "Testing exploration parameter with minimal game (10x10)"
-# echo "nu=10, gamma=1500"
-# bin/experiments/parameter_experiment 10 1500 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_1000.dat &
+# echo "nu=10, gamma=1500 (base case for both experiments)"
+# bin/experiments/parameter_experiment 10 1500 2> data/moves/param_10_1500.dat | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_1500.dat &
 # echo "nu=50, gamma=1500"
-# bin/experiments/parameter_experiment 50 1500 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_50_1000.dat &
+# bin/experiments/parameter_experiment 50 1500 2> data/moves/param_50_1500.dat| awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_50_1500.dat &
 # echo "nu=100, gamma=1500"
-# bin/experiments/parameter_experiment 100 1500 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_100_1000.dat &
+# bin/experiments/parameter_experiment 100 1500 2> data/moves/param_100_1500.dat | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_100_1500.dat &
 # echo "nu=150, gamma=1500"
-# bin/experiments/parameter_experiment 150 1500 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_150_1000.dat &
+# bin/experiments/parameter_experiment 150 1500 2> data/moves/param_150_1500.dat | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_150_1500.dat &
 # echo "nu=200, gamma=1500"
-# bin/experiments/parameter_experiment 200 1500 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_200_1000.dat &
+# bin/experiments/parameter_experiment 200 1500 2> data/moves/param_200_1500.dat | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_200_1500.dat &
 # echo "nu=250, gamma=1500"
-# bin/experiments/parameter_experiment 250 1500 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_250_1000.dat &
+# bin/experiments/parameter_experiment 250 1500 2> data/moves/param_250_1500.dat | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_250_1500.dat &
 
 # echo "Testing learning rate with minimal game (10x10)"
 # echo "nu=10, gamma=0"
-# bin/experiments/parameter_experiment 10 0 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_0.dat &
+# bin/experiments/parameter_experiment 10 0 2> data/moves/param_10_0.dat | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_0.dat &
 # echo "nu=10, gamma=500"
-# bin/experiments/parameter_experiment 10 500 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_500.dat &
+# bin/experiments/parameter_experiment 10 500 2> data/moves/param_10_500.dat | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_500.dat &
 # echo "nu=10, gamma=1000"
-# bin/experiments/parameter_experiment 10 1000 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_1000.dat &
-# echo "nu=10, gamma=1500"
-# bin/experiments/parameter_experiment 10 1500 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_1500.dat &
+# bin/experiments/parameter_experiment 10 1000 2> data/moves/param_10_1000.dat | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_1000.dat &
 # echo "nu=10, gamma=2000"
-# bin/experiments/parameter_experiment 10 2000 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_2000.dat &
+# bin/experiments/parameter_experiment 10 2000 2> data/moves/param_10_2000.dat | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_2000.dat &
 # echo "nu=10, gamma=2500"
-# bin/experiments/parameter_experiment 10 2500 | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_2500.dat &
+# bin/experiments/parameter_experiment 10 2500 2> data/moves/param_10_2500.dat | awk -v mean=0.48 -f bin/subtract_mean.awk > data/parameter_10_2500.dat &
+
+wait
+
+# echo "Testing best_move for exploration parameter with minimal game (10x10)"
+# echo "nu=10, gamma=1500 (base case for both experiments)"
+# bin/experiments/best_move_parameters 10 1500 > data/best_move_parameter_10_1500.dat &
+# echo "nu=50, gamma=1500"
+# bin/experiments/best_move_parameters 50 1500 > data/best_move_parameter_50_1500.dat &
+# echo "nu=100, gamma=1500"
+# bin/experiments/best_move_parameters 100 1500 > data/best_move_parameter_100_1500.dat &
+# echo "nu=150, gamma=1500"
+# bin/experiments/best_move_parameters 150 1500 > data/best_move_parameter_150_1500.dat &
+# echo "nu=200, gamma=1500"
+# bin/experiments/best_move_parameters 200 1500 > data/best_move_parameter_200_1500.dat &
+# echo "nu=250, gamma=1500"
+# bin/experiments/best_move_parameters 250 1500 > data/best_move_parameter_250_1500.dat &
+
+# echo "Testing best_move for learning rate with minimal game (10x10)"
+# echo "nu=10, gamma=0"
+# bin/experiments/best_move_parameters 10 0 > data/best_move_parameter_10_0.dat &
+# echo "nu=10, gamma=500"
+# bin/experiments/best_move_parameters 10 500 > data/best_move_parameter_10_500.dat &
+# echo "nu=10, gamma=1000"
+# bin/experiments/best_move_parameters 10 1000 > data/best_move_parameter_10_1000.dat &
+# echo "nu=10, gamma=2000"
+# bin/experiments/best_move_parameters 10 2000 > data/best_move_parameter_10_2000.dat &
+# echo "nu=10, gamma=2500"
+# bin/experiments/best_move_parameters 10 2500 > data/best_move_parameter_10_2500.dat &
 
 wait
 
@@ -131,6 +157,9 @@ gnuplot -c bin/plot_settings/plot_settings_new.gp ttt_2_level_10
 
 gnuplot -c bin/plot_settings/plot_exploration.gp
 gnuplot -c bin/plot_settings/plot_learning.gp
+
+gnuplot -c bin/plot_settings/plot_best_move_exploration.gp
+gnuplot -c bin/plot_settings/plot_best_move_learning.gp
 
 gnuplot -c bin/plot_settings/plot_best_move.gp best_move_10
 gnuplot -c bin/plot_settings/plot_best_move.gp best_move_20

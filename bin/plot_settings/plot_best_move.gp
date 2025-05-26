@@ -24,5 +24,5 @@ set ylabel 'Estimated chance of picking the best move'
 
 set errorbars 4
 
-plot experiment using ($1*0.85):2:3:4 with yerrorbars title "CBT" lc "green" lw 2 pt 2 ps 3, \
+plot experiment using ($1*0.85):2:3:4 with yerrorbars title "CBT" lc "red" lw 2 pt 2 ps 3, \
      control using ($1*1.15):2:3:4 with yerrorbars title "UCB" lc "blue" lw 2 pt 2 ps 3

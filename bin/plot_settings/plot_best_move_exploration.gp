@@ -1,14 +1,14 @@
-exp_10 = "data/parameter_10_1500.dat"
-exp_50 = "data/parameter_50_1500.dat"
-exp_100 = "data/parameter_100_1500.dat"
-exp_150 = "data/parameter_150_1500.dat"
-exp_200 = "data/parameter_200_1500.dat"
-exp_250 = "data/parameter_250_1500.dat"
+exp_10 = "data/best_move_parameter_10_1500.dat"
+exp_50 = "data/best_move_parameter_50_1500.dat"
+exp_100 = "data/best_move_parameter_100_1500.dat"
+exp_150 = "data/best_move_parameter_150_1500.dat"
+exp_200 = "data/best_move_parameter_200_1500.dat"
+exp_250 = "data/best_move_parameter_250_1500.dat"
 
 stats exp_10 using 1 name 'x' nooutput
 
 set terminal pngcairo size 1000,800 font ",24"
-set output 'plt/parameter_exploration.png'
+set output 'plt/best_move_parameter_exploration.png'
 set grid
 set ytics
 
