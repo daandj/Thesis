@@ -18,7 +18,7 @@ set logscale x
 
 # set yrange [0:1]
 set xlabel 'Number of repetitions'
-set ylabel 'Estimated regret'
+set ylabel "Difference of average\n outcome and minimax value"
 
 plot learning_0 using 1:2 lc "green" lw 3 with lines title "Learning rate = 0", \
      learning_500 using 1:2 lc "blue" lw 3 with lines title "Learning rate = 500", \

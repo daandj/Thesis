@@ -16,7 +16,7 @@ set autoscale noextend
 set offsets graph 0.06, graph 0.06, 0.001, 0.001
 
 set xlabel 'Number of repetitions'
-set ylabel 'Estimated regret'
+set ylabel "Difference of average\n outcome and minimax value"
 
 set errorbars 4
 

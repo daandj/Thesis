@@ -17,7 +17,7 @@ set logscale x
 set key right bottom
 
 set xlabel 'Number of repetitions'
-set ylabel 'Estimated regret'
+set ylabel 'Estimated chance of picking the best move'
 
 plot exp_10 using 1:2 with lines lc "green" lw 2 title "Exploration rate = 10", \
      exp_50 using 1:2 with lines lc "blue" lw 2 title "Exploration rate = 50", \
